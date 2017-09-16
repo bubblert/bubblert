@@ -8,12 +8,16 @@ from app import app
 @app.before_first_request
 def init_db_if_needed():
     db = get_db()
-    res = db.execute('SELECT count(*) FROM sqlite_master WHERE type=\'table\' AND name=\'change_table\'').fetchone()
+    res = db.execute('SELECT count(*) '
+                     'FROM sqlite_master '
+                     'WHERE type=\'table\' '
+                     'AND name=\'change_table\'').fetchone()
 
     if res[0] == 0:
         with app.open_resource('schema.sql', mode='r') as f:
             db.cursor().executescript(f.read())
-        db.execute('CREATE TABLE \'change_table\' (cht_id INTEGER PRIMARY KEY DESC)')
+        db.execute('CREATE TABLE \'change_table\' '
+                   '(cht_id INTEGER PRIMARY KEY DESC)')
         db.commit()
 
 

@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+
+  bubblert:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/bubblert
+    ports:
+      - 5000:5000
