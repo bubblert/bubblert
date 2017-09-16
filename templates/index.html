@@ -22,6 +22,7 @@
 {% endblock content %}
 
 {% block additionaljs %}
+    <script src="libs/typed.min.js"></script>
     <script async>
         let allNews = [];
         $(document).ready(function () {
@@ -30,13 +31,13 @@
                 socket.emit('start_news_stream');
             });
 
+
             socket.on('news_add', function (data) {
-                //allNews.unshift(data);
                 allNews = data;
                 
                 $('.home__category').each(function (index) {
                   if(index < allNews.length && index !== 0) {
-                    $(this).html("<a href='/zoom/'" + allNews[index].id + ">" + allNews[index].headline + "</a>")
+                    $(this).html(`<a href="/zoom/${allNews[index].item_id}">${allNews[index].headline}</a>`)
                   } else {
                     $(this).text("")
                   }
@@ -54,10 +55,7 @@
         let colors = ['#335557', '#57A473', '#E7CB63', '#F6981A', '#E2693F']
         $('.home__category').each(function(i, obj) {
             $(obj).css("background", colors[i++ % colors.length]);
-            console.log(i);
         });
-
-        let topics = ['politics', 'north korea', 'astronautics', 'dogs', 'education']
 
     </script>
 {% endblock additionaljs %}
