@@ -1,40 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Bubblert News!</title>
-</head>
-<body>
-<div id="content">
-    <div id="article-bubbles"><svg></svg></div>
-    <div id="article-zoom"></div>
-    <div id="article-text"></div>
-</div>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.min.js"></script>	
-<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
-<script src="bubble_chart.js"></script>
+{% include 'base.html' %}
+
+{% block additionaljs %}
 <script async>
-  function switchToPage(page) {
-    $("#article-bubbles").hide();
-    $("#article-zoom").hide();
-    $("#article-text").hide();
-    $("#" + page).show();
-  }
-
-  let chart = bubbleChart("#article-bubbles");
-
-  $(document).ready(function() {
-    switchToPage("article-bubbles");
+  let allNews = [];
+  $(document).ready(function () {
     let socket = io.connect('http://' + document.domain + ':' + location.port);
-    socket.on('connect', function() {
+    socket.on('connect', function () {
       socket.emit('start_news_stream');
     });
 
     socket.on('news_add', function (data) {
-      let news = JSON.parse(data);
-      chart.render(news);
+      let current_news = JSON.parse(data);
+      allNews.push(current_news);
     });
   });
 </script>
-</body>
-</html>
+{% endblock additionaljs %}

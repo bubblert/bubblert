@@ -67,8 +67,17 @@ def respond_with_json(obj):
 
 @app.route('/')
 def index():
-    """Serve the client-side application."""
     return render_template('index.html')
+
+
+@app.route('/zoom')
+def zoom():
+    return render_template('zoom.html')
+
+
+@app.route('/detail')
+def detail():
+    return render_template('detail.html')
 
 
 @socketio.on('connect')
