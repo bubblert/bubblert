@@ -12,25 +12,9 @@
 {% block additionaljs %}
     <script src="libs/typed.min.js"></script>
     <script async>
-        function createEntryLink(item) { // create headline entry link
-            let val = `<a href="/zoom/${item.item_id}">${item.headline}</a>`;
-            return val;
-        }
-
         function createEntryId(item_id) {
             let id = item_id + '';
             return 'id' + id.hashCode();
-        }
-        function createEntryHtml(item) {
-            let val = createEntryLink(item);
-            let div = `<div id="${createEntryId(item.item_id)}" class="col-sm-4 first home__category"> ${val} </div>`;
-            console.log(div);
-            return div;
-        }
-
-        function appendEntry(item) {
-            let div = createEntryHtml(item);
-            $('#categories').prepend($(div));
         }
 
         function update_colors() {
@@ -50,7 +34,9 @@
             socket.on('news_add', function (data) {
                 if (data) {
                     data.forEach(function (item) {
-                        appendEntry(item);
+                        let val = `<a href="/zoom/${item.item_id}">${item.headline}</a>`;
+                        let div = `<div id="${createEntryId(item.item_id)}" class="col-sm-4 first home__category"> ${val} </div>`;
+                        $('#categories').prepend($(div));
                     });
                     update_colors();
                 }
@@ -59,31 +45,23 @@
             socket.on('news', function (item) {
                 console.log(item);
                 if (item) {
-                    let div = createEntryHtml(item);
+                    let val = `<a href="/zoom/${item.item_id}">${item.headline}</a>`;
+                    let div = `<div id="${createEntryId(item.item_id)}" class="col-sm-4 first home__category"> ${val} </div>`;
                     $('#categories').prepend($(div));
                     update_colors();
 
-{#                    new Typed('#' + createEntryId(item.item_id), {#}
-{#                        strings: [item.headline],#}
-{#                        typeSpeed: 30,#}
-{#                        onComplete: () => $('.first').html(createEntryLink(item))#}
-{#                    });#}
+{#                    #}
+
+                    {#                    new Typed('#' + createEntryId(item.item_id), {#}
+                    {#                        strings: [item.headline],#}
+                    {#                        typeSpeed: 30,#}
+                    {#                        onComplete: () => $('.first').html(createEntryLink(item))#}
+                    {#                    });#}
 
                 }
             });
         });
 
-
-        {#                #}
-        {#                $('.home__category').each(function (index) {#}
-        {#                    if (index < allNews.length && index !== 0) {#}
-        {#                        $(this).html(`<a href="/zoom/${allNews[index].item_id}">${allNews[index].headline}</a>`)#}
-        {#                    } else {#}
-        {#                        $(this).text("")#}
-        {#                    }#}
-        {#                })#}
-
-        {#    });#}
 
     </script>
 {% endblock additionaljs %}
