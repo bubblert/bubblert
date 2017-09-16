@@ -42,6 +42,13 @@ teardown:
 logs:
 	@docker-compose logs -f --tail 20
 
+.PHONY: bootstrap
+bootstrap: copy_env
+
+.PHONY: copy_env
+copy_env:
+	@cp .env.example .env
+
 .PHONY: clean
 clean:
 	@rm -f .version

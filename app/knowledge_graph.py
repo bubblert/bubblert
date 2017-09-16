@@ -1,14 +1,10 @@
-import json
-import urllib
+from os import environ
+
 import requests
-import urllib.parse
 
-from settings import KNOWLEDGE_SEARCH_API_TOKEN
-
-SEARCH_URL = 'https://kgsearch.googleapis.com/v1/entities:search'
-
-if not KNOWLEDGE_SEARCH_API_TOKEN:
+if not environ.get('KNOWLEDGE_SEARCH_API_TOKEN'):
     raise Exception('set KNOWLEDGE_SEARCH_API_TOKEN token')
+
 
 def get_facts_for_keyword(query):
     """
@@ -21,10 +17,10 @@ def get_facts_for_keyword(query):
         'query': query,
         'limit': 10,
         'indent': True,
-        'key': KNOWLEDGE_SEARCH_API_TOKEN,
+        'key': environ.get('KNOWLEDGE_SEARCH_API_TOKEN'),
     }
 
-    r = requests.get(SEARCH_URL, params=params)
+    r = requests.get(environ.get('SEARCH_URL'), params=params)
     if r.status_code not in [200, 201]:
         return None
 

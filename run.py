@@ -1,15 +1,38 @@
 #!/usr/bin/env python
 import json
 import logging
-import werkzeug
+import sqlite3
 
+import werkzeug
 from flask import Flask, render_template, Response
 from flask.ext.apscheduler import APScheduler
 from flask_socketio import emit, SocketIO
 
+from app.knowledge_graph import get_facts_for_keyword
+from app.news_aggregation_processor import NewsAggregationProcessor
 from app.news_fetcher_processor import NewsFetcherProcessor
 from app.reuters import Reuters
 from app.knowledge_graph import get_facts_for_keyword
+
+
+def init_db():
+    db = sqlite3.connect('app_db.sqlite')
+    res = db.execute('SELECT count(*) '
+                     'FROM sqlite_master '
+                     'WHERE type=\'table\' '
+                     'AND name=\'change_table\'').fetchone()
+
+    if res[0] == 0:
+        with open('schema.sql', 'r') as f:
+            db.cursor().executescript(f.read())
+        db.execute('CREATE TABLE \'change_table\' '
+                   '(cht_id INTEGER PRIMARY KEY DESC)')
+        db.commit()
+
+    db.close()
+
+init_db()
+
 
 app = Flask(__name__, static_url_path='')
 app.config['SECRET_KEY'] = 'secret!'
@@ -18,10 +41,18 @@ socketio = SocketIO(app)
 news_processor = NewsFetcherProcessor()
 reuters = Reuters()
 
+aggregation_processor = NewsAggregationProcessor()
+
 app.config.update(JOBS=[
     {
         'id': 'news_fetching_job',
         'func': news_processor.process,
+        'trigger': 'interval',
+        'seconds': 10
+    },
+    {
+        'id': 'news_aggregation_job',
+        'func': aggregation_processor.process,
         'trigger': 'interval',
         'seconds': 2
     }

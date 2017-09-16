@@ -1,30 +1,36 @@
+import json
 import urllib
+from os import environ
 from urllib.request import urlopen
-import time
 import logging
 from xml.etree.ElementTree import ElementTree, fromstring, tostring
 
 from requests import HTTPError
 
 from settings import REUTERS_PASSWORD, REUTERS_USERNAME
+from xml.etree.ElementTree import fromstring, tostring
+
+import requests
 
 from bs4 import BeautifulSoup
 import re
 
 import json
 
-AUTH_URL = "https://commerce.reuters.com/rmd/rest/xml/"
-SERVICE_URL_JSON = "http://rmb.reuters.com/rmd/rest/json/"
-SERVICE_URL_XML = "http://rmb.reuters.com/rmd/rest/xml/"
-XML_NAMESPACE = 'http://iptc.org/std/nar/2006-10-01'
-CONTENT_SERVE = 'http://content.reuters.com/auth-server/content/'
+AUTH_URL = environ.get('AUTH_URL')
+SERVICE_URL_JSON = environ.get('SERVICE_URL_JSON')
+SERVICE_URL_XML = environ.get('SERVICE_URL_XML')
+CONTENT_SERVE = environ.get('CONTENT_SERVE')  #'http://content.reuters.com/auth-server/content/'
 
 
 class Reuters:
-    def __init__(self, username=REUTERS_USERNAME, password=REUTERS_PASSWORD):
+    def __init__(self):
         self.authToken = None
 
-        tree = fromstring(self._call_string('login', {'username': username, 'password': password}, True))
+        tree = fromstring(self._call_string('login', {
+            'username': environ.get('REUTERS_USERNAME'),
+            'password': environ.get('REUTERS_PASSWORD')
+        }, True))
         if tree.tag == 'authToken':
             self.authToken = tree.text
         else:
@@ -139,3 +145,40 @@ class Reuters:
 
         return {'image': '{}?token={}'.format(image, self.authToken) if image is not None else None,
                 'keywords': [c.text for c in xml.findall('.//keyword')]}
+
+
+class ReutersPermid:
+    @staticmethod
+    def get_tags(text):
+        response = requests.post('https://api.thomsonreuters.com/permid/calais',
+                                 data=text.encode('utf-8'),
+                                 headers={
+                                     'Content-Type': 'text/raw',
+                                     'Accept': 'application/json',
+                                     'x-ag-access-token': f'{environ.get("PERMID_TOKEN")}',
+                                     'x-calais-language': 'English',
+                                     'outputFormat': 'application/json'
+                                 })
+        if response.status_code == 200:
+            tags = []
+            permid = json.loads(response.content)
+            for key in permid.keys():
+                current_permid = permid[key]
+                if 'relevance' in current_permid and float(current_permid['relevance']) > 0:
+                    tags.append(current_permid['name'])
+            return tags
+        return 'Invalid response'
+
+
+if __name__ == '__main__':
+    print(ReutersPermid.get_tags('''
+    North Korea. Constantly ready for war. Holding a nuclear sword over the US and its allies, threatening to lash out at any time.
+
+Life here is a mystery to most of the world.
+
+CNN’s Will Ripley, Tim Schwarz and Justin Robertson visited North Korea in July and spent 15 days there. Despite being constantly under the watchful eye of government minders, they got an unprecedented level of access to this secretive state, beyond the bright lights of Pyongyang, and into the North Korean hinterland.
+
+They spoke to people from all walks of life, learning more about what makes this country tick, the reason for its deep hatred of the US, and just why people who live under an authoritarian regime claim to adore the Kim family.
+
+This is Ripley’s account of their journey into the heart of the hermit nation.
+    '''))
