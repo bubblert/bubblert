@@ -20,6 +20,7 @@
                 <diV class="col-12">
                     <h5>Facts</h5>
                     <ul id="article-fact-list">
+                        <li>No facts available</li>
                    </ul>
                 </div>
                 <hr/>
@@ -41,6 +42,7 @@ Located: {{ story.located }}
 <script async>
   $.get('/stories/{{ story.id }}/facts', function (data) {
     let list = $("#article-fact-list");
+    list.html("");
     for(let index=0;index<data.length;index++) {
         let content = data[index].body
         content = content.replace(/"/g, '\"').replace(/\n/g,' ');
@@ -48,5 +50,6 @@ Located: {{ story.located }}
         list.append(element);
     }
   }, "json");
+
 </script>
 {% endblock additionaljs %}
