@@ -3,6 +3,7 @@ import socketio
 import eventlet
 import eventlet.wsgi
 from flask import Flask, render_template
+from os import listdir
 
 sio = socketio.Server()
 app = Flask(__name__)
@@ -12,6 +13,13 @@ app = Flask(__name__)
 def index():
     """Serve the client-side application."""
     return render_template('index.html')
+
+
+@app.route('/components/<name>')
+def components(name):
+    if '..' not in name and name in listdir("./templates/components"):
+        return render_template(f'/components/{name}')
+    return 'Not found', 404
 
 
 @sio.on('connect', namespace='/chat')
