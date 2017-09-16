@@ -2,6 +2,7 @@ amqp==2.2.2
 APScheduler==3.3.1
 beautifulsoup4==4.6.0
 billiard==3.5.0.3
+blinker==1.4
 bs4==0.0.1
 celery==4.0.1
 click==6.6
@@ -10,6 +11,7 @@ facebook-sdk==2.0.0
 flake8==3.4.1
 Flask==0.11.1
 Flask-APScheduler==1.6.0
+Flask-DebugToolbar==0.10.1
 Flask-SocketIO==2.8.1
 greenlet==0.4.10
 itsdangerous==0.24
