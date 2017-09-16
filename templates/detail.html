@@ -42,7 +42,10 @@ Located: {{ story.located }}
 <script async>
   $.get('/stories/{{ story.id }}/facts', function (data) {
     let list = $("#article-fact-list");
-    list.html("");
+
+    if (data.length > 0)
+        list.html("");
+
     for(let index=0;index<data.length;index++) {
         let content = data[index].body
         content = content.replace(/"/g, '\"').replace(/\n/g,' ');
