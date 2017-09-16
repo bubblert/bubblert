@@ -1,20 +1,13 @@
-import json
 import urllib
+import requests
+import re
+import json
+import logging
+
 from os import environ
 from urllib.request import urlopen
-import logging
-from xml.etree.ElementTree import ElementTree, fromstring, tostring
-
 from requests import HTTPError
-
-from xml.etree.ElementTree import fromstring, tostring
-
-import requests
-
-from bs4 import BeautifulSoup
-import re
-
-import json
+from xml.etree.ElementTree import fromstring
 
 
 class Reuters:
