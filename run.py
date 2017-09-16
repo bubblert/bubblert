@@ -14,6 +14,7 @@ from app.news_fetcher_processor import NewsFetcherProcessor
 from app.reuters import Reuters
 from app.knowledge_graph import get_facts_for_keyword
 from app.reuters import ReutersPermid
+from app.instagram import InstagramApi
 from app.nltk_processor import find_nouns
 
 
@@ -223,6 +224,11 @@ def get_facts(story_id):
 
     print(result)
     return respond_with_json(result)
+
+
+@app.route('/images/<keyword>', methods=['GET'])
+def get_images(keyword):
+    return InstagramApi.get_images(keyword)
 
 
 def http_500(msg):
