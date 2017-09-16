@@ -72,7 +72,7 @@ def handle_news_stream_start():
 def get_story(story_id):
     if not story_id:
         return http_500('No story ID given')
-    story = reuters.get_story(story_id)
+    story = reuters.get_story_json(story_id)
     if not story:
         return http_500('Story ID not found')
 
