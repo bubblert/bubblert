@@ -3,8 +3,7 @@
 <section class="home">
     <div class="container">
         <div class="row">
-            <div class="col-sm-4 home__category">.col-sm-3</div>
-            <div class="col-sm-4 home__category">.col-sm-6</div>
+            <div class="col-sm-4 first home__category">.col-sm-3</div>
             <div class="col-sm-4 home__category">.col-sm-3</div>
             <div class="col-sm-4 home__category">.col-sm-3</div>
             <div class="col-sm-4 home__category">.col-sm-3</div>
@@ -32,7 +31,22 @@
 
             socket.on('news_add', function (data) {
                 let current_news = JSON.parse(data);
-                allNews.push(current_news);
+                allNews.unshift(current_news);
+
+                $('.col-sm-4').each(function (index) {
+                  if(index < allNews.length && index !== 0) {
+                    $(this).text(allNews[index].headline)
+                  } else {
+                    $(this).text("")
+                  }
+                })
+                new Typed('.first', {
+                  strings: [allNews[0].headline],
+                  typeSpeed: 30,
+                  callback: function () {
+                    $(".typed-cursor").hide();
+                  }
+                });
             });
         });
 
@@ -41,6 +55,10 @@
             $(obj).css("background", colors[i++ % colors.length]);
             console.log(i);
         });
+
+
+        let topics = ['politics', 'north korea', 'astronautics', 'dogs', 'education']
+
 
 
     </script>
