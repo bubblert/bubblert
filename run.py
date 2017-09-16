@@ -103,20 +103,46 @@ def stories_until(end_timestamp):
         end_timestamp = int(end_timestamp)
 
     db = sqlite3.connect('app_db.sqlite')
-    res = db.execute("""
-        SELECT item_id, date_created, headline, keywords
-        FROM news
-        WHERE group_id IS NULL AND  date_created_timestamp > ? - 43200 AND  ? > date_created_timestamp
-    """, (end_timestamp, end_timestamp))
+    res = db.execute("""SELECT
+                          type,
+                          item_id,
+                          date_created_timestamp,
+                          headline,
+                          keywords
+                        FROM (
+                          SELECT
+                            'news' as type,
+                            item_id,
+                            date_created,
+                            date_created_timestamp,
+                            headline,
+                            keywords
+                          FROM news
+                          WHERE group_id IS NULL AND date_created_timestamp > ? - 43200 AND ? > date_created_timestamp
+
+                          UNION ALL
+
+                          SELECT
+                            'group' as type,
+                            id AS item_id,
+                            date_created,
+                            date_created_timestamp,
+                            headline,
+                            keywords
+                          FROM groups
+                          WHERE date_created_timestamp > ? - 43200 AND ? > date_created_timestamp
+                        )
+                        ORDER BY date_created_timestamp
+                          DESC;""", (end_timestamp, end_timestamp, end_timestamp, end_timestamp))
 
     resp = []
     for r in res.fetchall():
         resp.append({
-            'type': 'news',
-            'item_id': r[0],
-            'date_created': r[1],
-            'headline': r[2],
-            'keywords': r[3]
+            'type': r[0],
+            'item_id': r[1],
+            'date_created': r[2],
+            'headline': r[3],
+            'keywords': r[4]
         })
 
     return respond_with_json(resp)
