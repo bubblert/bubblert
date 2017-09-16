@@ -99,9 +99,12 @@ def disconnect():
 def new_news(message):
     emit('news', message, broadcast=True)
 
+@socketio.on('start_news_stream')
+def handle_news_stream_start():
+    emit('news_add', stories_until(0, False))
 
 @app.route('/stories_until/<end_timestamp>', methods=['GET'])
-def stories_until(end_timestamp):
+def stories_until(end_timestamp, use_response=True):
     if end_timestamp is None or int(end_timestamp) == 0:
         end_timestamp = int(datetime.datetime.utcnow().timestamp())
     else:
@@ -134,7 +137,7 @@ def stories_until(end_timestamp):
                             date_created_timestamp,
                             headline,
                             keywords
-                          FROM groups
+                          FROM groups as g
                           WHERE date_created_timestamp > ? - 43200 AND ? > date_created_timestamp
                         )
                         ORDER BY date_created_timestamp
@@ -150,7 +153,7 @@ def stories_until(end_timestamp):
             'keywords': r[4]
         })
 
-    return respond_with_json(resp)
+    return respond_with_json(resp) if use_response else resp
 
 
 @app.route('/group/<group_id>', methods=['GET'])
@@ -175,7 +178,7 @@ def group_by_id(group_id):
                 'keywords': r[3]
             })
 
-        return respond_with_json(resp)
+        return respond_with_json(resp) 
 
 
 @app.route('/stories/<story_id>', methods=['GET'])

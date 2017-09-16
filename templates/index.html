@@ -31,10 +31,10 @@
             });
 
             socket.on('news_add', function (data) {
-                let current_news = JSON.parse(data);
-                allNews.unshift(current_news);
-
-                $('.col-sm-4').each(function (index) {
+                //allNews.unshift(data);
+                allNews = data;
+                
+                $('.home__category').each(function (index) {
                   if(index < allNews.length && index !== 0) {
                     $(this).html("<a href='/zoom/'" + allNews[index].id + ">" + allNews[index].headline + "</a>")
                   } else {
