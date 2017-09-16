@@ -128,7 +128,7 @@ def stories_until(end_timestamp, use_response=True):
                             headline,
                             keywords
                           FROM news
-                          WHERE group_id IS NULL AND date_created_timestamp > ? - 43200 AND ? > date_created_timestamp
+                          WHERE group_id IS NULL AND date_created_timestamp > ? - 432000 AND ? > date_created_timestamp
 
                           UNION ALL
 
@@ -140,7 +140,7 @@ def stories_until(end_timestamp, use_response=True):
                             headline,
                             keywords
                           FROM groups AS g
-                          WHERE date_created_timestamp > ? - 43200 AND ? > date_created_timestamp
+                          WHERE date_created_timestamp > ? - 432000 AND ? > date_created_timestamp
                         )
                         ORDER BY date_created_timestamp
                           DESC;""", (end_timestamp, end_timestamp, end_timestamp, end_timestamp))
@@ -152,7 +152,7 @@ def stories_until(end_timestamp, use_response=True):
             'item_id': r[1],  # group id
             'date_created': r[2],
             'headline': r[3],
-            'keywords': r[4]
+            'keywords': json.loads(r[4]) if r[4] else []
         })
 
     return respond_with_json(resp) if use_response else resp
@@ -177,7 +177,7 @@ def group_by_id(group_id):
                 'item_id': r[0],
                 'date_created': r[1],
                 'headline': r[2],
-                'keywords': r[3]
+                'keywords': json.loads(r[3]) if r[4] else []
             })
 
         return respond_with_json(resp)

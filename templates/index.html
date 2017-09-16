@@ -31,12 +31,25 @@
                 socket.emit('start_news_stream');
             });
 
+            var keywordSet = new Set();
+
             socket.on('news_add', function (data) {
                 if (data) {
                     data.forEach(function (item) {
-                        let val = `<a href="/zoom/${item.item_id}">${item.headline}</a>`;
-                        let div = `<div id="${createEntryId(item.item_id)}" class="col-sm-4 first home__category"> ${val} </div>`;
-                        $('#categories').prepend($(div));
+                        if (item && item.type && item.type == 'group' && item.keywords != null) {
+                            let found = false;
+                            console.log(item);
+                            item.keywords.forEach(function (key) {
+                                if (!keywordSet.has(key) && !found && key != null) {
+                                    keywordSet.add(key);
+
+                                    let val = `<a href="/zoom/${item.item_id}">${key}</a>`;
+                                    let div = `<div id="${createEntryId(item.item_id)}" class="col-sm-4 first home__category"> ${val} </div>`;
+                                    $('#categories').prepend($(div));
+{#                                    console.log(item);#}
+                                }
+                            });
+                        }
                     });
                     update_colors();
                 }
@@ -50,7 +63,7 @@
                     $('#categories').prepend($(div));
                     update_colors();
 
-{#                    #}
+                    {#                    #}
 
                     {#                    new Typed('#' + createEntryId(item.item_id), {#}
                     {#                        strings: [item.headline],#}
