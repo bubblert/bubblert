@@ -4,15 +4,20 @@
     <title>Bubblert News!</title>
 </head>
 <body>
-<div id="news-data"></div>
-<div id="articles-data"></div>
-<div id="content"></div>
+<div id="content">
+    <div id="main"></div>
+    <div id="article-zoom"></div>
+    <div id="article"></div>
+</div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/vue/2.4.0/vue.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
 <script async>
   $(document).ready(function() {
-    $("#content").load("components/Main.html");
+    $("#main").load("components/Main.html");
+    $("#main").show();
+    $("#article-zoom").hide();
+    $("#article").hide();
   });
 </script>
 </body>
