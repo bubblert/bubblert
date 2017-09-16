@@ -25,7 +25,6 @@
 - tldr
 - article
 - videos ...
-- facts ...
 
 
 ## GET/stories/$ID/facts

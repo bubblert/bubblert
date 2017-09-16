@@ -95,8 +95,7 @@ class Reuters:
             'tldr': tldr,
             'article': article,
             'lang': 'en',
-            'videos': [],
-            'facts': []
+            'videos': []
         }
 
 

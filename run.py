@@ -10,12 +10,14 @@ from flask_socketio import emit, SocketIO
 from app.news_fetcher_processor import NewsFetcherProcessor
 from app.reuters import Reuters
 from functools import wraps
+from app.knowledge_graph import get_facts_for_keyword
 
 app = Flask(__name__, static_url_path='')
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 
 news_processor = NewsFetcherProcessor()
+reuters = Reuters()
 
 app.config.update(JOBS=[
     {
@@ -27,13 +29,9 @@ app.config.update(JOBS=[
 ], SCHEDULER_JOBSTORES={}, SCHEDULER_API_ENABLED=True)
 
 
-def returns_json(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        r = f(*args, **kwargs)
-        return Response(json.dumps(r, indent=4, separators=(',', ': '))
-                        , content_type='application/json; charset=utf-8')
-    return decorated_function
+def respond_with_json(obj):
+    return Response(json.dumps(obj, indent=4, separators=(',', ': '))
+                    , content_type='application/json; charset=utf-8')
 
 
 @app.route('/')
@@ -61,26 +59,38 @@ def new_news(message):
 def handle_news_stream_start():
     for i in range(10):
         emit('news_add', json.dumps({
-                'id': i,
-                'keyword': i,
-                'image': None,
-                'headline': f'newsflash number {i}',
-                'lastUpdated': 'now'
-            }
+            'id': i,
+            'keyword': i,
+            'image': None,
+            'headline': f'newsflash number {i}',
+            'lastUpdated': 'now'
+        }
         ))
 
 
 @app.route('/stories/<story_id>', methods=['GET'])
-@returns_json
 def get_story(story_id):
     if not story_id:
         return http_500('No story ID given')
-    reuters = Reuters()
     story = reuters.get_story(story_id)
     if not story:
         return http_500('Story ID not found')
 
-    return story
+    return respond_with_json(story)
+
+
+@app.route('/stories/<story_id>/facts', methods=['GET'])
+def get_facts(story_id):
+    story = reuters.get_story(story_id)
+    if not story:
+        return http_500('Story ID not found')
+
+    # TODO: use better keywords to search for facts
+    keyword = story.get('headline')
+    keyword = 'north korea'
+    facts = get_facts_for_keyword(keyword)
+    print(facts)
+    return respond_with_json(facts)
 
 
 def http_500(msg):
@@ -89,7 +99,6 @@ def http_500(msg):
 
 @werkzeug.serving.run_with_reloader
 def runserver():
-
     scheduler = APScheduler()
     scheduler.init_app(app)
     scheduler.start()
