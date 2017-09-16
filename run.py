@@ -102,7 +102,6 @@ def runserver():
     scheduler = APScheduler()
     scheduler.init_app(app)
     scheduler.start()
-
     socketio.run(app, host='0.0.0.0', port=8000)
 
 

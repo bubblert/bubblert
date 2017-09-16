@@ -1,25 +1,24 @@
+import json
 import urllib
+from os import environ
 from urllib.request import urlopen
-import time
 import logging
-from xml.etree.ElementTree import ElementTree, fromstring, tostring
-from settings import REUTERS_PASSWORD, REUTERS_USERNAME
+from xml.etree.ElementTree import fromstring, tostring
+
+import requests
 
 from bs4 import BeautifulSoup
 import re
 
-import json
-
-AUTH_URL = "https://commerce.reuters.com/rmd/rest/xml/"
-SERVICE_URL = "http://rmb.reuters.com/rmd/rest/json/"
-XML_NAMESPACE = 'http://iptc.org/std/nar/2006-10-01'
-
 
 class Reuters:
-    def __init__(self, username=REUTERS_USERNAME, password=REUTERS_PASSWORD):
+    def __init__(self):
         self.authToken = None
 
-        tree = fromstring(self._call_string('login', {'username': username, 'password': password}, True))
+        tree = fromstring(self._call_string('login', {
+            'username': environ.get('REUTERS_USERNAME'),
+            'password': environ.get('REUTERS_PASSWORD')
+        }, True))
         if tree.tag == 'authToken':
             self.authToken = tree.text
         else:
@@ -27,9 +26,9 @@ class Reuters:
 
     def _call_string(self, method, args={}, auth=False):
         if auth:
-            root_url = AUTH_URL
+            root_url = environ.get('AUTH_URL')
         else:
-            root_url = SERVICE_URL
+            root_url = environ.get('SERVICE_URL')
             args['token'] = self.authToken
 
         url = root_url + method + '?' + urllib.parse.urlencode(args)
@@ -61,36 +60,6 @@ class Reuters:
         except urllib.error.HTTPError as e:
             logging.error(e)
             return None
-
-
-
-        # # this is hacky, namespace issues
-        # item_str = tostring(item).decode('utf-8')
-        # item_str = item_str.replace('<ns0:', '<').replace('<ns1:', '<').replace("<html:", "<")
-        # item_str = item_str.replace('</ns0:', '</').replace('</ns1:', '</').replace("</html:", "</")
-        #
-        # soup = BeautifulSoup(item_str, 'lxml')
-        #
-        # headline = soup.find('headline')
-        # if headline:
-        #     headline = headline.text
-        # located = soup.find('located')
-        # if located:
-        #     located = located.text
-        # created = soup.find('dateline')
-        # if created:
-        #     created = created.text
-        # tldr = None
-        # for t in soup.find_all('description', attrs={'role': 'descRole:intro'}):
-        #     tldr = t.text
-        #
-        # imgs = []
-        # for img in soup.findAll('contentSet'):
-        #     print(img.text)
-        #
-        # article = self.find_between(item_str, '<body>', '</body>')
-        # article = article.replace('\n', '').replace('\r', '')
-        # article = re.sub("\s\s+", " ", article)
 
         story = ''
         intro = ''
@@ -178,44 +147,24 @@ class Reuters:
         }
 
 
-        #
-        # item_new = fromstring(item_str)
-        # print(item_str)
-        #
-        #
-        # ns = {
-        #     'html': "http://www.w3.org/1999/xhtml",
-        #     'ns0': "http://iptc.org/std/nar/2006-10-01",
-        #     'ns1': "http://www.reuters.com/ns/2003/08/content"
-        # }
-
-        # i = item.find('{http://iptc.org/std/nar/2006-10-01}newsMessage')
-        # print(i)
-
-
-        # print(soup.findAll('newsMessage'))
-        # for article_xml in soup.find_all(XML_NAMESPACE + 'headline'):
-        #     print(article_xml.text)
-
-
-        # channels = [{'alias': c.findtext('alias'),
-        #              'description': c.findtext('description')}
-        #             for c in tree.findall('channelInformation')]
-        # print
-        # "List of channels:\n\talias\tdescription"
-        # print
-        # "\n".join(["\t%(alias)s\t%(description)s" % x for x in channels])
-        #
-        # # fetch id's and headlines for a channel
-        # rd = Reuters()
-        # tree = rd.call('items',
-        #                {'channel': 'AdG977',
-        #                 'channelCategory': 'OLR',
-        #                 'limit': '10'})
-        # items = [{'id': c.findtext('id'),
-        #           'headline': c.findtext('headline')}
-        #          for c in tree.findall('result')]
-        # print
-        # "\n\nList of items:\n\tid\theadline"
-        # print
-        # "\n".join(["\t%(id)s\t%(headline)s" % x for x in items])
+class ReutersPermid:
+    @staticmethod
+    def get_tags(text):
+        response = requests.post('https://api.thomsonreuters.com/permid/calais',
+                                 data=text.encode('utf-8'),
+                                 headers={
+                                     'Content-Type': 'text/raw',
+                                     'Accept': 'application/json',
+                                     'x-ag-access-token': f'{environ.get("PERMID_TOKEN")}',
+                                     'x-calais-language': 'English',
+                                     'outputFormat': 'application/json'
+                                 })
+        if response.status_code == 200:
+            tags = []
+            permid = json.loads(response.content)
+            for key in permid.keys():
+                current_permid = permid[key]
+                if 'relevance' in current_permid and float(current_permid['relevance']) > 0:
+                    tags.append(current_permid['name'])
+            return tags
+        return 'Invalid response'

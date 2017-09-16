@@ -1,3 +1,4 @@
+from os import environ
 from urllib.error import HTTPError
 from urllib.parse import urlencode
 from urllib.request import urlopen
@@ -5,19 +6,16 @@ from xml.etree.ElementTree import fromstring
 
 import re
 
-AUTH_URL = "https://commerce.reuters.com/rmd/rest/xml/"
-SERVICE_URL = "http://rmb.reuters.com/rmd/rest/xml/"
-
-NAMESPACE = "http://iptc.org/std/nar/2006-10-01/"
-
 
 class RoutersAPI:
     def __init__(self):
-        self.authToken = '0Uar2fCpykWdpaNseln+nzU0j1MmIwWV81kIX5wuiTI='
-        # self.authToken = self.get_token()
+        self.authToken = environ.get('REUTERS_TOKEN')
 
     def get_token(self):
-        tree = self._call_xml('login', {'username': 'HackZurichAPI', 'password': '8XtQb447'}, True)
+        tree = self._call_xml('login', {
+            'username': environ.get('REUTERS_USERNAME'),
+            'password': environ.get('REUTERS_PASSWORD')
+        }, True)
         if tree.tag == 'authToken':
             self.authToken = tree.text
         else:
@@ -36,9 +34,9 @@ class RoutersAPI:
             args = {}
 
         if auth:
-            root_url = AUTH_URL
+            root_url = environ.get('AUTH_URL')
         else:
-            root_url = SERVICE_URL
+            root_url = environ.get('SERVICE_URL')
             args['token'] = self.authToken
         url = root_url + method + '?' + urlencode(args)
         resp = urlopen(url, timeout=10)
