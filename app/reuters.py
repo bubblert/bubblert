@@ -28,9 +28,9 @@ class Reuters:
 
     def _call_string(self, method, args={}, auth=False, xml=False):
         if auth:
-            root_url = environ.get('AUTH_URL')
+            root_url = 'https://commerce.reuters.com/rmd/rest/xml/'
         else:
-            root_url = environ.get('SERVICE_URL_XML') if xml else environ.get('SERVICE_URL_JSON')
+            root_url = 'http://rmb.reuters.com/rmd/rest/xml/' if xml else environ.get('SERVICE_URL_JSON')
             args['token'] = self.authToken
 
         url = root_url + method + '?' + urllib.parse.urlencode(args)
