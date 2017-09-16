@@ -3,7 +3,7 @@ from urllib.error import HTTPError
 
 from socketIO_client import SocketIO
 
-from app.reuters_api import ReutersApi
+from app.reuters import Reuters
 
 
 class NewsFetcherProcessor:
@@ -14,7 +14,7 @@ class NewsFetcherProcessor:
 
     def process(self):
         self.socket_io = SocketIO('localhost', 8000)
-        self.rapi = ReutersApi()
+        self.rapi = Reuters()
 
         try:
             self.process_channels()

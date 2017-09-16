@@ -8,7 +8,7 @@ from flask.ext.apscheduler import APScheduler
 from flask_socketio import emit, SocketIO
 
 from app.news_fetcher_processor import NewsFetcherProcessor
-from app.reuters_api import ReutersApi
+from app.reuters import Reuters
 from app.knowledge_graph import get_facts_for_keyword
 
 app = Flask(__name__, static_url_path='')
@@ -16,7 +16,7 @@ app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 
 news_processor = NewsFetcherProcessor()
-reuters = ReutersApi()
+reuters = Reuters()
 
 app.config.update(JOBS=[
     {

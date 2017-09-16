@@ -20,7 +20,7 @@ XML_NAMESPACE = 'http://iptc.org/std/nar/2006-10-01'
 CONTENT_SERVE = 'http://content.reuters.com/auth-server/content/'
 
 
-class ReutersApi:
+class Reuters:
     def __init__(self, username=REUTERS_USERNAME, password=REUTERS_PASSWORD):
         self.authToken = None
 
