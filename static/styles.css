@@ -43,6 +43,10 @@ body {
     border-radius: .25rem;
 }
 
+.back-button:hover {
+    cursor: pointer;
+}
+
 .typed-cursor {
     display: none;
 }
