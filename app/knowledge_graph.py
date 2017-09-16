@@ -2,10 +2,6 @@ from os import environ
 
 import requests
 
-if not environ.get('KNOWLEDGE_SEARCH_API_TOKEN'):
-    raise Exception('set KNOWLEDGE_SEARCH_API_TOKEN token')
-
-
 def get_facts_for_keyword(query):
     """
     get factual knowledge for a given query

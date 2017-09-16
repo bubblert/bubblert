@@ -7,7 +7,6 @@ from xml.etree.ElementTree import ElementTree, fromstring, tostring
 
 from requests import HTTPError
 
-from settings import REUTERS_PASSWORD, REUTERS_USERNAME
 from xml.etree.ElementTree import fromstring, tostring
 
 import requests
@@ -16,11 +15,6 @@ from bs4 import BeautifulSoup
 import re
 
 import json
-
-AUTH_URL = environ.get('AUTH_URL')
-SERVICE_URL_JSON = environ.get('SERVICE_URL_JSON')
-SERVICE_URL_XML = environ.get('SERVICE_URL_XML')
-CONTENT_SERVE = environ.get('CONTENT_SERVE')  #'http://content.reuters.com/auth-server/content/'
 
 
 class Reuters:
@@ -41,9 +35,9 @@ class Reuters:
 
     def _call_string(self, method, args={}, auth=False, xml=False):
         if auth:
-            root_url = AUTH_URL
+            root_url = environ.get('AUTH_URL')
         else:
-            root_url = SERVICE_URL_XML if xml else SERVICE_URL_JSON
+            root_url = environ.get('SERVICE_URL_XML') if xml else environ.get('SERVICE_URL_JSON')
             args['token'] = self.authToken
 
         url = root_url + method + '?' + urllib.parse.urlencode(args)
@@ -101,14 +95,14 @@ class Reuters:
                     # TODO choose picture with largest size
                     # TODO issues with picture url
                     pic = pic_meta[0]
-                    uri = CONTENT_SERVE + story_id + '/' + pic.get('uri') + '?token=' + self.authToken
+                    uri = environ.get('CONTENT_SERVE') + story_id + '/' + pic.get('uri') + '?token=' + self.authToken
                     pictures.append(uri)
 
             if ass.get('type') == 'video':
                 vid_meta = ass.get('renditions')
                 if vid_meta:
                     vid = vid_meta[0]
-                    uri = CONTENT_SERVE + story_id + '/' + vid.get('uri') + '?token=' + self.authToken
+                    uri = environ.get('CONTENT_SERVE') + story_id + '/' + vid.get('uri') + '?token=' + self.authToken
                     videos.append(uri)
 
         return {
