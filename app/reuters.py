@@ -5,8 +5,12 @@ import logging
 from xml.etree.ElementTree import ElementTree, fromstring, tostring
 from settings import REUTERS_PASSWORD, REUTERS_USERNAME
 
+from bs4 import BeautifulSoup
+import re
+
 AUTH_URL = "https://commerce.reuters.com/rmd/rest/xml/"
 SERVICE_URL = "http://rmb.reuters.com/rmd/rest/xml/"
+XML_NAMESPACE = 'http://iptc.org/std/nar/2006-10-01'
 
 
 class Reuters:
@@ -35,6 +39,14 @@ class Reuters:
     def call(self, method, args={}):
         return self._call(method, args, False)
 
+    def find_between(self, s, first, last):
+        try:
+            start = s.index(first) + len(first)
+            end = s.index(last, start)
+            return s[start:end]
+        except ValueError:
+            return ""
+
     def get_story(self, story_id):
         args = {}
         args['id'] = story_id
@@ -44,11 +56,62 @@ class Reuters:
             logging.error(e)
             return None
 
-        # print(tostring(item))
-        for content in item.findall('.//inlineXML'):
-            print(content.text)
+        # this is hacky, namespace issues
+        item_str = tostring(item).decode('utf-8')
+        item_str = item_str.replace('<ns0:', '<').replace('<ns1:', '<').replace("<html:", "<")
+        item_str = item_str.replace('</ns0:', '</').replace('</ns1:', '</').replace("</html:", "</")
 
-        return None
+        soup = BeautifulSoup(item_str, 'lxml')
+        headline = soup.find('headline')
+        if headline:
+            headline = headline.text
+        located = soup.find('located')
+        if located:
+            located = located.text
+        created = soup.find('dateline')
+        if created:
+            created = created.text
+        tldr = soup.find('description')
+        if tldr:
+            tldr = tldr.text
+
+        article = self.find_between(item_str, '<body>', '</body>')
+        article = article.replace('\n', '').replace('\r', '')
+        article = re.sub("\s\s+", " ", article)
+
+        return {
+            'id': story_id,
+            'created': created,
+            'updated': '',
+            'images': [],
+            'headline': '',
+            'located': located,
+            'tldr': tldr,
+            'article': article,
+            'videos': [],
+            'facts': []
+        }
+
+
+        #
+        # item_new = fromstring(item_str)
+        # print(item_str)
+        #
+        #
+        # ns = {
+        #     'html': "http://www.w3.org/1999/xhtml",
+        #     'ns0': "http://iptc.org/std/nar/2006-10-01",
+        #     'ns1': "http://www.reuters.com/ns/2003/08/content"
+        # }
+
+        # i = item.find('{http://iptc.org/std/nar/2006-10-01}newsMessage')
+        # print(i)
+
+
+        # print(soup.findAll('newsMessage'))
+        # for article_xml in soup.find_all(XML_NAMESPACE + 'headline'):
+        #     print(article_xml.text)
+
 
         # channels = [{'alias': c.findtext('alias'),
         #              'description': c.findtext('description')}

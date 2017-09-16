@@ -13,6 +13,7 @@ from app.reuters import Reuters
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
+from functools import wraps
 
 news_processor = NewsFetcherProcessor()
 
@@ -24,6 +25,15 @@ app.config.update(JOBS=[
         'seconds': 2
     }
 ], SCHEDULER_JOBSTORES={}, SCHEDULER_API_ENABLED=True)
+
+
+def returns_json(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        r = f(*args, **kwargs)
+        return Response(json.dumps(r, indent=4, separators=(',', ': '))
+                        , content_type='application/json; charset=utf-8')
+    return decorated_function
 
 
 @app.route('/')
@@ -61,6 +71,7 @@ def handle_news_stream_start():
 
 
 @app.route('/stories/<story_id>', methods=['GET'])
+@returns_json
 def get_story(story_id):
     if not story_id:
         return http_500('No story ID given')
@@ -69,7 +80,7 @@ def get_story(story_id):
     if not story:
         return http_500('Story ID not found')
 
-    return json.dumps(story)
+    return story
 
 
 def http_500(msg):
