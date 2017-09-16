@@ -24,7 +24,7 @@ body {
 }
 
 #logo a {
-    color:#444;
+    color: #444;
 }
 
 #logo a:hover {
@@ -102,10 +102,15 @@ body {
     opacity: 0.8;
     border: 1px solid #fff;
     border-radius: 3px;
+    /*line-height: 15vh;*/
+}
+.home__category a {
+    color: #444;
+
 }
 
-.home__category a {
-    color:#444;
+.home__text {
+    text-transform: uppercase;
 }
 
 .home__category a:hover {
@@ -113,13 +118,13 @@ body {
 }
 
 .home__category a {
-    opacity: 1; !important;
+    opacity: 1;  !important;
 }
 
 .home__category:link {
-    opacity: 1; !important;
+    opacity: 1;
+!important;
 }
-
 
 .home__category:hover {
     opacity: 1;

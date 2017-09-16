@@ -44,7 +44,7 @@
                                     keywordSet.add(key);
 
                                     let val = `<a href="/zoom/${item.item_id}">${key}</a>`;
-                                    let div = `<div id="${createEntryId(item.item_id)}" class="col-sm-4 first home__category"> ${val} </div>`;
+                                    let div = `<div id="${createEntryId(item.item_id)}" class="col-sm-4 first home__category home__text"> ${val} </div>`;
                                     $('#categories').prepend($(div));
                                 }
                             });
@@ -53,25 +53,6 @@
                     update_colors();
                 }
             });
-
-            socket.on('news', function (item) {
-                console.log(item);
-                if (item) {
-                    let val = `<a href="/zoom/${item.item_id}">${item.headline}</a>`;
-                    let div = `<div id="${createEntryId(item.item_id)}" class="col-sm-4 first home__category"> ${val} </div>`;
-                    $('#categories').prepend($(div));
-                    update_colors();
-
-                    {#                    new Typed('#' + createEntryId(item.item_id), {#}
-                    {#                        strings: [item.headline],#}
-                    {#                        typeSpeed: 30,#}
-                    {#                        onComplete: () => $('.first').html(createEntryLink(item))#}
-                    {#                    });#}
-
-                }
-            });
         });
-
-
     </script>
 {% endblock additionaljs %}
