@@ -54,7 +54,7 @@ def disconnect():
 
 @socketio.on('new_news')
 def new_news(message):
-    emit('news', message, broadcast=True)
+    emit('news', message['data'], broadcast=True)
 
 
 @socketio.on('start_news_stream')
