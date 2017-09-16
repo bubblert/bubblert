@@ -3,7 +3,7 @@ import datetime
 
 import sqlite3
 
-from app.routers_api import RoutersAPI
+from app.reuters import Reuters
 
 
 db = sqlite3.connect('database.sqlite')
@@ -21,7 +21,7 @@ db.commit()
 
 
 
-rapi = RoutersAPI()
+rapi = Reuters()
 
 date_format = "%Y-%m-%dT%H:%M:%SZ"
 
