@@ -103,3 +103,4 @@ ENV/
 
 .idea/
 database.sqlite
+reuters_tmp
