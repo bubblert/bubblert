@@ -62,6 +62,7 @@ class Reuters:
         item_str = item_str.replace('</ns0:', '</').replace('</ns1:', '</').replace("</html:", "</")
 
         soup = BeautifulSoup(item_str, 'lxml')
+
         headline = soup.find('headline')
         if headline:
             headline = headline.text
@@ -71,23 +72,28 @@ class Reuters:
         created = soup.find('dateline')
         if created:
             created = created.text
-        tldr = soup.find('description')
-        if tldr:
-            tldr = tldr.text
+        tldr = None
+        for t in soup.find_all('description', attrs={'role': 'descRole:intro'}):
+            tldr = t.text
 
         article = self.find_between(item_str, '<body>', '</body>')
         article = article.replace('\n', '').replace('\r', '')
         article = re.sub("\s\s+", " ", article)
 
+        imgs = []
+        for img in soup.find_all('remoteContent'):
+            print(img)
+
         return {
             'id': story_id,
             'created': created,
-            'updated': '',
+            'updated': None,
             'images': [],
-            'headline': '',
+            'headline': headline,
             'located': located,
             'tldr': tldr,
             'article': article,
+            'lang': 'en',
             'videos': [],
             'facts': []
         }
