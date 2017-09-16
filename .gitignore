@@ -102,5 +102,4 @@ ENV/
 .mypy_cache/
 
 .idea/
-database.sqlite
 reuters_tmp

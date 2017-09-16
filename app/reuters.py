@@ -76,13 +76,14 @@ class Reuters:
         for t in soup.find_all('description', attrs={'role': 'descRole:intro'}):
             tldr = t.text
 
+        imgs = []
+        for img in soup.findAll('contentSet'):
+            print(img.text)
+
         article = self.find_between(item_str, '<body>', '</body>')
         article = article.replace('\n', '').replace('\r', '')
         article = re.sub("\s\s+", " ", article)
 
-        imgs = []
-        for img in soup.find_all('remoteContent'):
-            print(img)
 
         return {
             'id': story_id,
