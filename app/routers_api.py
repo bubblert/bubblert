@@ -10,9 +10,11 @@ SERVICE_URL = "http://rmb.reuters.com/rmd/rest/xml/"
 
 NAMESPACE = "http://iptc.org/std/nar/2006-10-01/"
 
+
 class RoutersAPI:
     def __init__(self):
         self.authToken = '0Uar2fCpykWdpaNseln+nzU0j1MmIwWV81kIX5wuiTI='
+        # self.authToken = self.get_token()
 
     def get_token(self):
         tree = self._call_xml('login', {'username': 'HackZurichAPI', 'password': '8XtQb447'}, True)
@@ -54,22 +56,28 @@ class RoutersAPI:
                           'maxAge': '120m',
                           'mediaType': 'T'})
 
-    def get_story(self, item_id):
+    def get_story_highlight(self, item_id):
+
+        item_id = 'tag:reuters.com,2017:newsml_OV6X1S2GB:1'
         try:
             item_str = self._call_raw('item', {'id': item_id})
         except HTTPError:
             return None
 
         body = self.find_between(item_str, "<body>", "</body>")
-        xml = fromstring(item_str)
 
-        for c in xml.findall('.//{%s}remoteContent' % NAMESPACE):
-            item_id = c.findtext('id')
+        stripped_str = re.sub('<inlineXML.*</inlineXML>', '', item_str, flags=re.DOTALL)
+        stripped_str = re.sub('<newsMessage.*?>', '<newsMessage>', stripped_str, flags=re.DOTALL, count=1)
+        stripped_str = re.sub('rtr:', '', stripped_str, flags=re.DOTALL)
 
-        return {
-            'body': body,
-            'dateline': xml.findtext('.//{%s}dateline' % NAMESPACE),
-        }
+        xml = fromstring(stripped_str)
+
+        image = None
+        for c in xml.findall('.//remoteContent[@contenttype=\'image/jpeg\']'):
+            image = c.attrib['href']
+            break
+
+        return {'image': '{}?token={}'.format(image, self.authToken) if image is not None else None}
 
     def find_between(self, s, first, last):
         try:

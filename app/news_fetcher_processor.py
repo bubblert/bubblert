@@ -23,27 +23,20 @@ class NewsFetcherProcessor:
             for c in tree.findall('result'):
                 item_id = c.findtext('id')
                 date_created = c.findtext('dateCreated')
-                # story = self.rapi.get_story(item_id)
+
+                story = self.rapi.get_story_highlight(item_id)
+
                 news_date = datetime.datetime.strptime(date_created, "%Y-%m-%dT%H:%M:%SZ")
 
                 if news_date > self.channel_date[channel]:
                     self.push_data({
                         'id': item_id,
                         'headline': c.findtext('headline'),
-                        'dateCreated': date_created
+                        'dateCreated': date_created,
+                        'image': story['image'],
+                        'keywords': ''
                     })
                     self.channel_date[channel] = news_date
-
-
-        # ## websocket: /newsfeed/
-        # ### request
-        # -
-        # ### response
-        # - id
-        # - keyword
-        # - image
-        # - headline
-        # - lastUpdated
 
     def push_data(self, data):
         self.socket_io.emit('new_news', {
