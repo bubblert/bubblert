@@ -32,4 +32,4 @@ def disconnect(sid):
 
 if __name__ == '__main__':
     app = socketio.Middleware(sio, app)
-    eventlet.wsgi.server(eventlet.listen(('', 5000)), app)
+    eventlet.wsgi.server(eventlet.listen(('', 8000)), app)
