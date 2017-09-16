@@ -1,7 +1,32 @@
 {% include 'base.html' %}
 
 {% block content %}
-<div class="content">
-    zoom
-</div>
+<section class="home">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4 first home__category">{{ story.headline }}</div>
+            <div class="col-sm-4 home__category">.col-sm-3</div>
+            <div class="col-sm-4 home__category">.col-sm-3</div>
+            <div class="col-sm-4 home__category">.col-sm-3</div>
+            <div class="col-sm-4 home__category">.col-sm-3</div>
+            <div class="col-sm-4 home__category">.col-sm-3</div>
+            <div class="col-sm-4 home__category">.col-sm-3</div>
+            <div class="col-sm-4 home__category">.col-sm-3</div>
+            <div class="col-sm-4 home__category">.col-sm-3</div>
+            <div class="col-sm-4 home__category">.col-sm-3</div>
+            <div class="col-sm-4 home__category">.col-sm-3</div>
+            <div class="col-sm-4 home__category">.col-sm-3</div>
+        </div>
+    </div>
+</section>
 {% endblock content %}
+
+{% block additionaljs %}
+<script async>
+  let colors = ['#335557', '#57A473', '#E7CB63', '#F6981A', '#E2693F']
+  $('.home__category').each(function(i, obj) {
+    $(obj).css("background", colors[i++ % colors.length]);
+    console.log(i);
+  });
+</script>
+{% endblock additionaljs %}

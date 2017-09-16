@@ -73,14 +73,14 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/zoom')
-def zoom():
-    return render_template('zoom.html')
+@app.route('/zoom/<story_id>')
+def zoom(story_id):
+    story = reuters.get_story(story_id)
+    return render_template('zoom.html', story=story)
 
 
-@app.route('/detail')
-def detail():
-    story_id = request.args.get('story_id')
+@app.route('/detail/<story_id>')
+def detail(story_id):
     story = reuters.get_story(story_id)
     return render_template('detail.html', story=story)
 

@@ -62,8 +62,7 @@ class Reuters:
                                'mediaType': 'T'})
 
     def get_story(self, story_id):
-        args = {}
-        args['id'] = story_id
+        args = {'id': story_id}
         try:
             item = self._call_json('item', args)
         except urllib.error.HTTPError as e:
@@ -90,14 +89,16 @@ class Reuters:
                         # TODO choose picture with largest size
                         # TODO issues with picture url
                         pic = pic_meta[0]
-                        uri = environ.get('CONTENT_SERVE') + story_id + '/' + pic.get('uri') + '?token=' + self.authToken
+                        uri = environ.get('CONTENT_SERVE') + story_id + '/' + pic.get(
+                            'uri') + '?token=' + self.authToken
                         pictures.append(uri)
 
                 if ass.get('type') == 'video':
                     vid_meta = ass.get('renditions')
                     if vid_meta:
                         vid = vid_meta[0]
-                        uri = environ.get('CONTENT_SERVE') + story_id + '/' + vid.get('uri') + '?token=' + self.authToken
+                        uri = environ.get('CONTENT_SERVE') + story_id + '/' + vid.get(
+                            'uri') + '?token=' + self.authToken
                         videos.append(uri)
 
         return {
@@ -135,7 +136,8 @@ class Reuters:
 
         return {'image': '{}?token={}'.format(image, self.authToken) if image is not None else None,
                 'keywords': [c.text for c in xml.findall('.//keyword')],
-                'body': self.find_between(item_str, '<body>', '</body>').replace('<p/>', '').replace('<p>', '').replace('</p>', '')}
+                'body': self.find_between(item_str, '<body>', '</body>').replace('<p/>', '').replace('<p>', '').replace(
+                    '</p>', '')}
 
     def find_between(self, s, first, last):
         try:
@@ -144,6 +146,7 @@ class Reuters:
             return s[start:end]
         except ValueError:
             return ""
+
 
 class ReutersPermid:
     @staticmethod
