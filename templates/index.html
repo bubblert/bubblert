@@ -44,7 +44,7 @@
                                     keywordSet.add(key);
 
                                     let val = `<a href="/zoom/${item.item_id}">${key}</a>`;
-                                    let div = `<div id="${createEntryId(item.item_id)}" class="col-sm-4 first home__category home__text"> ${val} </div>`;
+                                    let div = `<div id="${createEntryId(item.item_id)}" class="col-sm-3 first home__category home__text"> ${val} </div>`;
                                     $('#categories').prepend($(div));
                                 }
                             });
