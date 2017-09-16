@@ -15,3 +15,9 @@ git clone git@github.com:bubblert/bubblert.git \
         && cd bubblert \
         && make
 ```
+
+## Run
+
+```bash
+make start
+```
