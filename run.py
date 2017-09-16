@@ -9,11 +9,11 @@ from flask_socketio import emit, SocketIO
 
 from app.news_fetcher_processor import NewsFetcherProcessor
 from app.reuters import Reuters
+from functools import wraps
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='')
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
-from functools import wraps
 
 news_processor = NewsFetcherProcessor()
 

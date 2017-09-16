@@ -52,8 +52,8 @@ function bubbleChart() {
                 return ".3em";//scaleRadius(d[columnForRadius])/4;
             })
             .text(function(d) {
-                console.log(d.title);
-                return d.title;
+                console.log(d.headline);
+                return d.headline;
             });
 
         svg.append('text')
