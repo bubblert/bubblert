@@ -2,7 +2,7 @@ import urllib
 from urllib.request import urlopen
 import time
 import logging
-from xml.etree.ElementTree import ElementTree, fromstring
+from xml.etree.ElementTree import ElementTree, fromstring, tostring
 from settings import REUTERS_PASSWORD, REUTERS_USERNAME
 
 AUTH_URL = "https://commerce.reuters.com/rmd/rest/xml/"
@@ -44,8 +44,9 @@ class Reuters:
             logging.error(e)
             return None
 
-        for content in item.findall('contentSet'):
-            print(content)
+        # print(tostring(item))
+        for content in item.findall('.//inlineXML'):
+            print(content.text)
 
         return None
 
