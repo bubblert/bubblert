@@ -33,11 +33,9 @@ def get_similar_entities(news, list_of_entities):
     return res
 
 
-def create_group():
-    utc_now = datetime.datetime.utcnow()
-
+def create_group(time_of_creation):
     db.execute("INSERT INTO groups (date_created, date_created_timestamp) VALUES \
-                (?, ?)", (utc_now.strftime("%Y-%m-%dT%H:%M:%SZ"), int(utc_now.timestamp())))
+                (?, ?)", (datetime.datetime.fromtimestamp(time_of_creation).strftime("%Y-%m-%dT%H:%M:%SZ"), time_of_creation))
 
     db.commit()
     return db.execute("SELECT last_insert_rowid()").fetchone()[0]
@@ -112,7 +110,7 @@ while time_window_beginning < now:
         similar = get_similar_entities(news, not_assigned_news_in_window)
 
         if len(similar) > MINIMAL_NUMBER_OF_NEWS_TO_CREATE_GROUP:
-            grp_id = create_group()
+            grp_id = create_group(time_window_beginning + TIME_WINDOW_STEP)
             assign_news_to_group(news[0], grp_id)
             groups_to_refresh.add(grp_id)
 
