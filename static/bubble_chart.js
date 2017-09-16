@@ -1,11 +1,19 @@
-var bubbleChart = function(container, width, height) {
+var bubbleChart = function(container) {
     var maxRadius = 6,
         title = "bubblert",
-        marginTop = 100;
+        marginTop = 100,
+        data = [];
 
-    this.render = function(data) {
+    this.render = function(item) {
+        var height = window.innerHeight,
+            width = window.innerWidth;
+
         var svg = d3.select(container).selectAll('svg');
         svg.attr('width', width).attr('height', height);
+        
+        console.log(width);
+
+        data.push(item);
         
         var simulation = d3.forceSimulation(data)
             .force("charge", d3.forceManyBody().strength([-90]))

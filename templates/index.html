@@ -21,7 +21,7 @@
     $("#" + page).show();
   }
 
-  let chart = bubbleChart("#article-bubbles", 600, 400);
+  let chart = bubbleChart("#article-bubbles");
 
   $(document).ready(function() {
     switchToPage("article-bubbles");
@@ -33,6 +33,7 @@
 
     socket.on('news_add', function (data) {
       let news = JSON.parse(data);
+      console.log(news);
       chart.render(news);
     });
   });
