@@ -9,6 +9,7 @@ from flask_socketio import emit, SocketIO
 from os import listdir
 
 from app.news_fetcher_processor import NewsFetcherProcessor
+from app.reuters import Reuters
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
