@@ -1,7 +1,7 @@
 from flask import jsonify, request
 from flask_socketio import emit
 
-from app import app, socketio, celery
+from app import app, socketio
 
 
 @app.route('/')
