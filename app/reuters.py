@@ -28,9 +28,9 @@ class Reuters:
 
     def _call_string(self, method, args={}, auth=False, xml=False):
         if auth:
-            root_url = environ.get('AUTH_URL')
+            root_url = 'https://commerce.reuters.com/rmd/rest/xml/'
         else:
-            root_url = environ.get('SERVICE_URL_XML') if xml else environ.get('SERVICE_URL_JSON')
+            root_url = 'http://rmb.reuters.com/rmd/rest/xml/' if xml else environ.get('SERVICE_URL_JSON')
             args['token'] = self.authToken
 
         url = root_url + method + '?' + urllib.parse.urlencode(args)
@@ -131,8 +131,16 @@ class Reuters:
             break
 
         return {'image': '{}?token={}'.format(image, self.authToken) if image is not None else None,
-                'keywords': [c.text for c in xml.findall('.//keyword')]}
+                'keywords': [c.text for c in xml.findall('.//keyword')],
+                'body': self.find_between(item_str, '<body>', '</body>').replace('<p/>', '').replace('<p>', '').replace('</p>', '')}
 
+    def find_between(self, s, first, last):
+        try:
+            start = s.index(first) + len(first)
+            end = s.index(last, start)
+            return s[start:end]
+        except ValueError:
+            return ""
 
 class ReutersPermid:
     @staticmethod

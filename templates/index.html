@@ -1,18 +1,47 @@
 {% include 'base.html' %}
 
-{% block additionaljs %}
-<script async>
-  let allNews = [];
-  $(document).ready(function () {
-    let socket = io.connect('http://' + document.domain + ':' + location.port);
-    socket.on('connect', function () {
-      socket.emit('start_news_stream');
-    });
+<section class="home">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4 home__category">.col-sm-3</div>
+            <div class="col-sm-4 home__category">.col-sm-6</div>
+            <div class="col-sm-4 home__category">.col-sm-3</div>
+            <div class="col-sm-4 home__category">.col-sm-3</div>
+            <div class="col-sm-4 home__category">.col-sm-3</div>
+            <div class="col-sm-4 home__category">.col-sm-3</div>
+            <div class="col-sm-4 home__category">.col-sm-3</div>
+            <div class="col-sm-4 home__category">.col-sm-3</div>
+            <div class="col-sm-4 home__category">.col-sm-3</div>
+            <div class="col-sm-4 home__category">.col-sm-3</div>
+            <div class="col-sm-4 home__category">.col-sm-3</div>
+            <div class="col-sm-4 home__category">.col-sm-3</div>
+            <div class="col-sm-4 home__category">.col-sm-3</div>
+        </div>
+    </div>
 
-    socket.on('news_add', function (data) {
-     let current_news = JSON.parse(data);
-      allNews.push(current_news);
-    });
-  });
-</script>
+</section>
+
+{% block additionaljs %}
+    <script async>
+        let allNews = [];
+        $(document).ready(function () {
+            let socket = io.connect('http://' + document.domain + ':' + location.port);
+            socket.on('connect', function () {
+                socket.emit('start_news_stream');
+            });
+
+            socket.on('news_add', function (data) {
+                let current_news = JSON.parse(data);
+                allNews.push(current_news);
+            });
+        });
+
+        let colors = ['#335557', '#57A473', '#E7CB63', '#F6981A', '#E2693F']
+        $('.home__category').each(function(i, obj) {
+            $(obj).css("background", colors[i++ % colors.length]);
+            console.log(i);
+        });
+
+
+    </script>
 {% endblock additionaljs %}
