@@ -25,7 +25,7 @@ class NewsFetcherProcessor:
 
         try:
             self.process_channels()
-            self.test_news_for_frontend() # TODO
+            # self.test_news_for_frontend() # TODO
         except HTTPError:
             print("Error occurred when fetching latest news data")
 
