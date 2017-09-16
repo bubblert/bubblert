@@ -2,6 +2,7 @@
 import datetime
 
 import sqlite3
+from time import sleep
 
 from app.reuters import Reuters
 
@@ -25,18 +26,18 @@ rapi = Reuters()
 
 date_format = "%Y-%m-%dT%H:%M:%SZ"
 
-start_date = datetime.datetime.strptime("2017-09-08T00:00:00Z", date_format)
-end_date = datetime.datetime.utcnow()
+start_date = datetime.datetime.strptime("2017-09-10T00:00:00Z", date_format)
+end_date = datetime.datetime.utcnow() + datetime.timedelta(hours=10)
 
 for channel in rapi.get_channels():
     while start_date < end_date:
-        res = rapi.call('items',
+        res = rapi._call_xml('items',
                              {'channel': channel,
                               'dateRange': "%s-%s" % (start_date.strftime("%Y.%m.%d.%H.%M"),
-                                                      (start_date + datetime.timedelta(hours=12)).strftime(
+                                                      (start_date + datetime.timedelta(hours=3)).strftime(
                                                           "%Y.%m.%d.%H.%M")),
                               'mediaType': 'T'})
-
+        sleep(2)
         for c in res.findall('result'):
             item_id = c.findtext('id')
             channel = c.findtext('channel')
@@ -48,7 +49,9 @@ for channel in rapi.get_channels():
                        (item_id, channel, date_created, headline, language))
             db.commit()
 
-        start_date = start_date + datetime.timedelta(hours=12)
+        start_date = start_date + datetime.timedelta(hours=3)
 
+    start_date = datetime.datetime.strptime("2017-09-10T00:00:00Z", date_format)
+    end_date = datetime.datetime.utcnow() + datetime.timedelta(hours=10)
 
 

@@ -30,7 +30,7 @@ class Reuters:
         if auth:
             root_url = 'https://commerce.reuters.com/rmd/rest/xml/'
         else:
-            root_url = 'http://rmb.reuters.com/rmd/rest/xml/' if xml else environ.get('SERVICE_URL_JSON')
+            root_url = 'http://rmb.reuters.com/rmd/rest/xml/' if xml else 'http://rmb.reuters.com/rmd/rest/json/'
             args['token'] = self.authToken
 
         url = root_url + method + '?' + urllib.parse.urlencode(args)
@@ -74,29 +74,31 @@ class Reuters:
         intro = ''
         pictures = []
         videos = []
-        for ass in item.get('associations'):
-            if ass.get('type') == 'text':
-                story = ass.get('body_xhtml')
-                story = story.replace('\n', '').replace('\r', '')
-                story = re.sub("\s\s+", " ", story)
-                intro = ass.get('intro')
 
-            if ass.get('type') == 'picture':
-                uri = ''
-                pic_meta = ass.get('renditions')
-                if pic_meta:
-                    # TODO choose picture with largest size
-                    # TODO issues with picture url
-                    pic = pic_meta[0]
-                    uri = environ.get('CONTENT_SERVE') + story_id + '/' + pic.get('uri') + '?token=' + self.authToken
-                    pictures.append(uri)
+        if 'associations' in item:
+            for ass in item.get('associations'):
+                if ass.get('type') == 'text':
+                    story = ass.get('body_xhtml')
+                    story = story.replace('\n', '').replace('\r', '')
+                    story = re.sub("\s\s+", " ", story)
+                    intro = ass.get('intro')
 
-            if ass.get('type') == 'video':
-                vid_meta = ass.get('renditions')
-                if vid_meta:
-                    vid = vid_meta[0]
-                    uri = environ.get('CONTENT_SERVE') + story_id + '/' + vid.get('uri') + '?token=' + self.authToken
-                    videos.append(uri)
+                if ass.get('type') == 'picture':
+                    uri = ''
+                    pic_meta = ass.get('renditions')
+                    if pic_meta:
+                        # TODO choose picture with largest size
+                        # TODO issues with picture url
+                        pic = pic_meta[0]
+                        uri = environ.get('CONTENT_SERVE') + story_id + '/' + pic.get('uri') + '?token=' + self.authToken
+                        pictures.append(uri)
+
+                if ass.get('type') == 'video':
+                    vid_meta = ass.get('renditions')
+                    if vid_meta:
+                        vid = vid_meta[0]
+                        uri = environ.get('CONTENT_SERVE') + story_id + '/' + vid.get('uri') + '?token=' + self.authToken
+                        videos.append(uri)
 
         return {
             'id': story_id,
@@ -108,7 +110,8 @@ class Reuters:
             'tldr': intro,
             'article': story,
             'language': item.get('language'),
-            'videos': videos
+            'videos': videos,
+            'body_xhtml': item.get('body_xhtml')
             # 'audio': []
         }
 
