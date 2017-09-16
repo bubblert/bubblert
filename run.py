@@ -4,14 +4,26 @@ import logging
 import werkzeug
 
 from flask import Flask, render_template, Response
+from flask.ext.apscheduler import APScheduler
 from flask_socketio import emit, SocketIO
 from os import listdir
-from app.reuters import Reuters
 
+from app.news_fetcher_processor import NewsFetcherProcessor
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
+
+news_processor = NewsFetcherProcessor()
+
+app.config.update(JOBS=[
+    {
+        'id': 'news_fetching_job',
+        'func': news_processor.process,
+        'trigger': 'interval',
+        'seconds': 2
+    }
+], SCHEDULER_JOBSTORES={}, SCHEDULER_API_ENABLED=True)
 
 
 @app.route('/')
@@ -35,6 +47,11 @@ def connect():
 @socketio.on('disconnect')
 def disconnect():
     print('disconnected')
+
+
+@socketio.on('new_news')
+def new_news(message):
+    emit('news', message['data'], broadcast=True)
 
 
 @socketio.on('start_news_stream')
@@ -68,6 +85,11 @@ def http_500(msg):
 
 @werkzeug.serving.run_with_reloader
 def runserver():
+
+    scheduler = APScheduler()
+    scheduler.init_app(app)
+    scheduler.start()
+
     socketio.run(app, host='0.0.0.0', port=8000)
 
 
