@@ -22,7 +22,7 @@ app.config.update(JOBS=[
         'id': 'news_fetching_job',
         'func': news_processor.process,
         'trigger': 'interval',
-        'seconds': 2
+        'seconds': 10
     }
 ], SCHEDULER_JOBSTORES={}, SCHEDULER_API_ENABLED=True)
 
@@ -54,7 +54,7 @@ def disconnect():
 
 @socketio.on('new_news')
 def new_news(message):
-    emit('news', message['data'], broadcast=True)
+    emit('news', message, broadcast=True)
 
 
 @socketio.on('start_news_stream')
@@ -94,7 +94,7 @@ def runserver():
     scheduler.init_app(app)
     scheduler.start()
 
-    socketio.run(app, host='0.0.0.0', port=8000)
+    socketio.run(app, host='localhost', port=8000)
 
 
 if __name__ == '__main__':

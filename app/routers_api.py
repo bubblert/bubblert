@@ -58,13 +58,10 @@ class RoutersAPI:
 
     def get_story_highlight(self, item_id):
 
-        item_id = 'tag:reuters.com,2017:newsml_OV6X1S2GB:1'
         try:
             item_str = self._call_raw('item', {'id': item_id})
         except HTTPError:
             return None
-
-        body = self.find_between(item_str, "<body>", "</body>")
 
         stripped_str = re.sub('<inlineXML.*</inlineXML>', '', item_str, flags=re.DOTALL)
         stripped_str = re.sub('<newsMessage.*?>', '<newsMessage>', stripped_str, flags=re.DOTALL, count=1)
@@ -77,7 +74,8 @@ class RoutersAPI:
             image = c.attrib['href']
             break
 
-        return {'image': '{}?token={}'.format(image, self.authToken) if image is not None else None}
+        return {'image': '{}?token={}'.format(image, self.authToken) if image is not None else None,
+                'keywords': [c.text for c in xml.findall('.//keyword')]}
 
     def find_between(self, s, first, last):
         try:

@@ -1,4 +1,6 @@
 import datetime
+from urllib.error import HTTPError
+
 from socketIO_client import SocketIO
 
 from app.routers_api import RoutersAPI
@@ -14,6 +16,12 @@ class NewsFetcherProcessor:
         self.socket_io = SocketIO('localhost', 8000)
         self.rapi = RoutersAPI()
 
+        try:
+            self.process_channels()
+        except HTTPError:
+            print("Error occurred when fetching latest news data" )
+
+    def process_channels(self):
         for channel in self.rapi.get_channels():
 
             if channel not in self.channel_date:
@@ -34,11 +42,9 @@ class NewsFetcherProcessor:
                         'headline': c.findtext('headline'),
                         'dateCreated': date_created,
                         'image': story['image'],
-                        'keywords': ''
+                        'keywords': story['keywords']
                     })
                     self.channel_date[channel] = news_date
 
     def push_data(self, data):
-        self.socket_io.emit('new_news', {
-            'data': data
-        })
+        self.socket_io.emit('new_news', data)
