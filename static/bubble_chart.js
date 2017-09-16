@@ -1,45 +1,52 @@
 var bubbleChart = function(container) {
     var maxRadius = 6,
-        title = "bubblert",
-        marginTop = 100,
-        data = [];
+    title = "bubblert",
+    marginTop = 100,
+    newData = []
+    
+    var svg = d3.select(container).append('svg')
+        .attr('width', window.innerWidth)
+        .attr('height', window.innerHeight);
+
+    var bubble = d3.layout.pack()
+        .size([window.innerWidth, window.innerHeight])
+        .value(function(d) {return d.size;}) // new data is loaded to bubble layout
+        .padding(3);
+    
+    svg.append('text')
+        .attr('x',window.innerWidth/2).attr('y',marginTop)
+        .attr("text-anchor", "middle")
+        .attr("font-size","1.8em")
+        .text(title);
 
     this.render = function(item) {
-        var height = window.innerHeight,
-            width = window.innerWidth;
 
-        var svg = d3.select(container).selectAll('svg');
-        svg.attr('width', width).attr('height', height);
+        var nodes = bubble.nodes(this.processData(item));
+            //.filter(function(d) { return !d.children; }); // filter out the outer bubble
+
+        var circle = svg.selectAll('circle')
+			.data(nodes, function(d) { return d.headline; });
         
-        console.log(width);
+        var duration = 500;
+        var delay = 0;
 
-        data.push(item);
-        
-        var simulation = d3.forceSimulation(data)
-            .force("charge", d3.forceManyBody().strength([-90]))
-            .force("x", d3.forceX())
-            .force("y", d3.forceY())
-            .on("tick", ticked);
+        circle.transition()
+            .duration(duration)
+            .delay(function(d, i) {delay = i * 7; return delay;}) 
+            .attr('transform', function(d) { return 'translate(' + d.x + ',' + d.y + ')'; })
+            .attr('r', scaleRadius)
+            .style('opacity', 1); // force to 1, so they don't get stuck below 1 at enter()
 
-        var node = svg.selectAll("circle")
-            .data(data)
-            .enter()
-            .append("g")
-            .attr('transform', 'translate(' + [width / 2, height / 2] + ')')
-            //.style("fill", function(d) { return colorCircles(d.category)});
-
-        node.append('circle')
-            .attr("id",function(d,i) {
-                return i;
-            })
-            .attr('r', function(d) { return scaleRadius(d)})
-            .style('opacity',0.5)
-            .append("clipPath")
-            .attr("id",function(d,i) {
-                return "clip-"+i;
-            });
+        circle.enter().append('circle')
+            .attr('transform', function(d) { return 'translate(' + d.x + ',' + d.y + ')'; })
+            .attr('r', function(d) { return 0; })
+            .transition()
+            .duration(duration * 1.2)
+            .attr('transform', function(d) { return 'translate(' + d.x + ',' + d.y + ')'; })
+            .attr('r', scaleRadius)
+            .style('opacity', 0.5);
     
-        node.append('text')
+        circle.append('text')
             .attr("id",function(d,i) {
                 return i;
             })
@@ -55,28 +62,23 @@ var bubbleChart = function(container) {
                 return ".3em";//scaleRadius(d[columnForRadius])/4;
             })
             .text(function(d) {
-                console.log(d.headline);
                 return d.headline;
             });
-
-        svg.append('text')
-			.attr('x',width/2).attr('y',marginTop)
-			.attr("text-anchor", "middle")
-			.attr("font-size","1.8em")
-			.text(title);
         
 
-        function ticked(e) {
-            node.attr("transform",function(d) {
-                return "translate(" + [d.x+(width / 2), d.y+((height+marginTop) / 2)] +")";
-            });
-        }
-            
         function scaleRadius(element) {
             // todo return proper scale
             return Math.random() * 40 + 10;
         }
+
     }
+
+    this.processData = function(data) {
+        data.size = Math.random() * 40 + 10;
+        newData.push(data);
+		return {children: newData, headline: "root", size: 1000};
+	}
+
 
     return this;
 }
