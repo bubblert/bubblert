@@ -1,11 +1,18 @@
 #!/usr/bin/env python
 from flask import Flask, render_template
 from flask_socketio import send, emit, SocketIO
+import socketio
+import eventlet
+import eventlet.wsgi
+from flask import Flask, render_template, Response
 from os import listdir
+import json
+import logging
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
+from app.reuters import Reuters
 
 
 @app.route('/')
@@ -37,5 +44,23 @@ def handle_news_stream_start():
         emit('news', f'newsflash number {i}')
 
 
+@app.route('/stories/<story_id>', methods=['GET'])
+def get_story(story_id):
+    if not story_id:
+        return http_500('No story ID given')
+    reuters = Reuters()
+    story = reuters.get_story(story_id)
+    if not story:
+        return http_500('Story ID not found')
+
+    return json.dumps(story)
+
+
+def http_500(msg):
+    return Response(json.dumps({'error': msg}), 500)
+
+
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG)
+
     socketio.run(app, host='0.0.0.0', port=8000)

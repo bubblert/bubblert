@@ -1,8 +1,6 @@
 from flask import jsonify, request
 from flask_socketio import emit
 
-from app import app, socketio
-
 
 @app.route('/')
 def root():
@@ -23,6 +21,6 @@ def analyze_post():
     }), 202
 
 
-@socketio.on('processing_status')
+#@socketio.on('processing_status')
 def route_message(message):
     emit(message['page'], message['data'], broadcast=True)
