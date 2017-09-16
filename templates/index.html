@@ -46,7 +46,6 @@
                                     let val = `<a href="/zoom/${item.item_id}">${key}</a>`;
                                     let div = `<div id="${createEntryId(item.item_id)}" class="col-sm-4 first home__category"> ${val} </div>`;
                                     $('#categories').prepend($(div));
-{#                                    console.log(item);#}
                                 }
                             });
                         }
@@ -62,8 +61,6 @@
                     let div = `<div id="${createEntryId(item.item_id)}" class="col-sm-4 first home__category"> ${val} </div>`;
                     $('#categories').prepend($(div));
                     update_colors();
-
-                    {#                    #}
 
                     {#                    new Typed('#' + createEntryId(item.item_id), {#}
                     {#                        strings: [item.headline],#}

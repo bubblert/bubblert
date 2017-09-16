@@ -177,7 +177,7 @@ def group_by_id(group_id):
                 'item_id': r[0],
                 'date_created': r[1],
                 'headline': r[2],
-                'keywords': json.loads(r[3]) if r[4] else []
+                'keywords': json.loads(r[3]) if r[3] else []
             })
 
         return respond_with_json(resp)
