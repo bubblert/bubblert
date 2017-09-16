@@ -40,7 +40,8 @@ class Reuters:
         args['id'] = story_id
         try:
             item = self.call('item', args)
-        except urllib.error.HTTPError:
+        except urllib.error.HTTPError as e:
+            logging.error(e)
             return None
 
         for content in item.findall('contentSet'):
