@@ -45,9 +45,7 @@
                 new Typed('.first', {
                   strings: [allNews[0].headline],
                   typeSpeed: 30,
-                  callback: function () {
-                    $(".typed-cursor").hide();
-                  }
+                  onComplete: () => $('.first').html(`<a href="/zoom/${allNews[0].item_id}">${allNews[0].headline}</a>`)
                 });
             });
         });
