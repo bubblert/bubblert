@@ -90,6 +90,14 @@ body {
     opacity: 0.6;
 }
 
+.home__category a {
+    color:#444;
+}
+
+.home__category a:hover {
+    text-decoration: none;
+}
+
 .home__category:hover {
     opacity: 1;
 }
