@@ -1,0 +1,71 @@
+{% include 'base.html' %}
+
+{% block content %}
+<div id="content" class="container">
+    <div id="article-bubbles"><svg></svg></div>
+    <div id="article-zoom"></div>
+    <div id="article-text" class="row">
+        <div class="back-button">←</div>
+        <div class="col-md-8">
+            <div class="card">
+                <img class="card-img-top" src="https://unsplash.it/250/100/" alt="Card image cap">
+                <div class="card-body">
+                    <h4 class="card-title">Lorem ipsum dolor sit amet, cetero consetetur</h4>
+                    <p class="card-text">Lorem ipsum dolor sit amet, cetero consetetur in vis. Brute fabulas corpora in vis, ne pro lorem erant omnesque. Te expetenda urbanitas dissentiunt vix, id sed placerat contentiones. Mea vulputate intellegat constituto at, usu mediocritatem concludaturque cu. Harum omnesque apeirian cum ea, duo iisque dolorem assueverit ex..</p>
+                    <a href="#" class="btn btn-primary">Read more </a>
+                </div>
+                </div>
+        </div>
+        <div class="col-md-4">
+            <div class="row">
+            <diV class="col-12">
+                <h5>Facts</h5>
+                <ul id="article-fact-list">
+                <li>This is some text within a card block</li>
+                <li>This is some text within a card block</li>
+                <li>This is some text within a card block</li>
+                <li>This is some text within a card block</li>
+                <li>This is some text within a card block</li>
+                </ul>             
+            </div>
+            <hr/>
+            <div class="col-12">
+                <h5>Metadata</h5>
+                    <pre>
+ID: tag.23425.ddd
+Hello
+                    </pre>          
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block additionaljs %}
+<script async>
+    function showDetailPage(id) {
+        switchToPage("article-text");
+        $.get('/stories/' + id, function(data) {
+            console.log(data);
+            if (data.image.length > 0) {
+            $( "#article-image" ).show().attr("src", data.image[0]);
+            } else {
+            $( "#article-image" ).hide();
+            }
+            $( "#article-head" ).html(data.headline);
+            $( "#article-description" ).html(data.tldr);
+        }, "json" );
+
+        $.get('/stories/' + id +'/facts', function(data) {
+            console.log(data);
+            var list = $("#article-fact-list");
+            list.html("");
+            data.forEach(function(e) {
+            var element = $("<li>" + e.content + "</li>");
+            list.append(element);
+            })
+        }, "json" );
+    }
+</script>
+{% endblock additionaljs %}
