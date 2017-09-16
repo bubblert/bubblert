@@ -23,18 +23,18 @@ def components(name):
 
 @socketio.on('connect')
 def connect():
-    print("connect ")
+    print("connected")
 
 
 @socketio.on('disconnect')
 def disconnect():
-    print('disconnect ')
+    print('disconnected')
 
 
-@socketio.on('message')
-def handle_message(message):
-    print('received message: ' + message)
-    emit('message', 'server says hello back!')
+@socketio.on('start_news_stream')
+def handle_news_stream_start():
+    for i in range(100):
+        emit('news', f'newsflash number {i}')
 
 
 if __name__ == '__main__':

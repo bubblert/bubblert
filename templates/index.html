@@ -18,10 +18,7 @@
       console.log(data);
     });
     socket.on('connect', function() {
-      socket.emit('message', 'hello world');
-    });
-    socket.on('message', function(data) {
-      console.log(data);
+      socket.emit('start_news_stream');
     });
   });
 </script>
