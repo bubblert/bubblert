@@ -11,7 +11,7 @@
                 {% endif %}
                 <div class="card-body">
                     <h4 class="card-title">{{ story.headline }}</h4>
-                    <p class="card-text">{{ story.tldr }}</p>
+                    <p class="card-text">{{ story.body_xhtml | safe }}</p>
                 </div>
             </div>
         </div>
@@ -20,7 +20,6 @@
                 <diV class="col-12">
                     <h5>Facts</h5>
                     <ul id="article-fact-list">
-                        <li>No facts available</li>
                    </ul>
                 </div>
                 <hr/>
@@ -41,14 +40,12 @@ Located: {{ story.located }}
 {% block additionaljs %}
 <script async>
   $.get('/stories/{{ story.id }}/facts', function (data) {
-    console.log(data);
-    if (data.length > 0) {
-        var list = $("#article-fact-list");
-        list.html("");
-        data.forEach(function (e) {
-        var element = $("<li>" + e.content + "</li>");
+    let list = $("#article-fact-list");
+    for(let index=0;index<data.length;index++) {
+        let content = data[index].body
+        content = content.replace(/"/g, '\"').replace(/\n/g,' ');
+        let element = $(`<a href="#" onclick='alert("${content}")'><li>${data[index].title}</li></a>`);
         list.append(element);
-        })
     }
   }, "json");
 </script>

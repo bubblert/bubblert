@@ -198,10 +198,9 @@ def get_facts(story_id):
     if not story:
         return http_500('Story ID not found')
 
-    article = story.get('article')
+    article = story.get('body_xhtml')
     article = article if article else ''
     tags = ReutersPermid.get_tags(article)
-    tag = ''
     result = []
 
     LIMIT = 2
@@ -226,8 +225,8 @@ def runserver():
     scheduler = APScheduler()
     scheduler.init_app(app)
     scheduler.start()
-
     socketio.run(app, host='0.0.0.0', port=8000)
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
