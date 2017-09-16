@@ -4,7 +4,7 @@ import logging
 import sqlite3
 
 import werkzeug
-from flask import Flask, render_template, Response
+from flask import Flask, render_template, Response, request
 from flask.ext.apscheduler import APScheduler
 from flask_socketio import emit, SocketIO
 
@@ -77,7 +77,9 @@ def zoom():
 
 @app.route('/detail')
 def detail():
-    return render_template('detail.html')
+    story_id = request.args.get('story_id')
+    story = reuters.get_story(story_id)
+    return render_template('detail.html', story=story)
 
 
 @socketio.on('connect')
@@ -134,9 +136,11 @@ def get_facts(story_id):
     LIMIT = 2
     i = 0
     for tag in tags:
-        result = result + get_facts_for_keyword(tag)
-        i = i + 1
-        if i > LIMIT: break
+        facts = get_facts_for_keyword(tag)
+        if facts: 
+            result = result + facts
+            i = i + 1
+            if i > LIMIT: break
 
     print(result)
     return respond_with_json(result)

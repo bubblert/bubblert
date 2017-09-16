@@ -3,16 +3,15 @@
 {% block content %}
 <div id="content" class="container">
     <div id="article-text" class="row">
-        <div class="back-button">←</div>
+        <div onclick="javascript:history.back()" class="back-button">←</div>
         <div class="col-md-8">
             <div class="card">
-                <img class="card-img-top" src="https://unsplash.it/250/100/" alt="Card image cap">
+                {% if story.images %}
+                <img class="card-img-top" src="{{ story.images[0] }}" alt="Card image cap">
+                {% endif %}
                 <div class="card-body">
-                    <h4 class="card-title">Lorem ipsum dolor sit amet, cetero consetetur</h4>
-                    <p class="card-text">Lorem ipsum dolor sit amet, cetero consetetur in vis. Brute fabulas corpora in
-                        vis, ne pro lorem erant omnesque. Te expetenda urbanitas dissentiunt vix, id sed placerat
-                        contentiones. Mea vulputate intellegat constituto at, usu mediocritatem concludaturque cu. Harum
-                        omnesque apeirian cum ea, duo iisque dolorem assueverit ex..</p>
+                    <h4 class="card-title">{{ story.headline }}</h4>
+                    <p class="card-text">{{ story.tldr }}</p>
                 </div>
             </div>
         </div>
@@ -21,14 +20,18 @@
                 <diV class="col-12">
                     <h5>Facts</h5>
                     <ul id="article-fact-list">
-                        <li>This is some text within a card block</li>
-                        <li>This is some text within a card block</li>
-                        <li>This is some text within a card block</li>
-                        <li>This is some text within a card block</li>
-                        <li>This is some text within a card block</li>
-                    </ul>
+                        <li>No facts available</li>
+                   </ul>
                 </div>
                 <hr/>
+                <diV class="col-12">
+                    <h5>Metadata</h5>
+                    <pre>
+ID: {{ story.id }}
+Created: {{ story.created }}
+Located: {{ story.located }}
+                    </pre>
+                </div>
             </div>
         </div>
     </div>
@@ -37,25 +40,16 @@
 
 {% block additionaljs %}
 <script async>
-  $.get('/stories/' + id, function (data) {
+  $.get('/stories/{{ story.id }}/facts', function (data) {
     console.log(data);
-    if (data.image.length > 0) {
-      $("#article-image").show().attr("src", data.image[0]);
-    } else {
-      $("#article-image").hide();
+    if (data.length > 0) {
+        var list = $("#article-fact-list");
+        list.html("");
+        data.forEach(function (e) {
+        var element = $("<li>" + e.content + "</li>");
+        list.append(element);
+        })
     }
-    $("#article-head").html(data.headline);
-    $("#article-description").html(data.tldr);
-  }, "json");
-
-  $.get('/stories/' + id + '/facts', function (data) {
-    console.log(data);
-    var list = $("#article-fact-list");
-    list.html("");
-    data.forEach(function (e) {
-      var element = $("<li>" + e.content + "</li>");
-      list.append(element);
-    })
   }, "json");
 </script>
 {% endblock additionaljs %}
