@@ -6,7 +6,6 @@ import werkzeug
 from flask import Flask, render_template, Response
 from flask.ext.apscheduler import APScheduler
 from flask_socketio import emit, SocketIO
-from os import listdir
 
 from app.news_fetcher_processor import NewsFetcherProcessor
 from app.reuters import Reuters
@@ -31,13 +30,6 @@ app.config.update(JOBS=[
 def index():
     """Serve the client-side application."""
     return render_template('index.html')
-
-
-@app.route('/components/<name>')
-def components(name):
-    if '..' not in name and name in listdir("./templates/components"):
-        return render_template(f'/components/{name}')
-    return 'Not found', 404
 
 
 @socketio.on('connect')
