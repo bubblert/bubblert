@@ -4,6 +4,7 @@ from urllib.error import HTTPError
 from socketIO_client import SocketIO
 
 from app.routers_api import RoutersAPI
+from app.reuters import Reuters
 
 
 class NewsFetcherProcessor:
@@ -14,12 +15,12 @@ class NewsFetcherProcessor:
 
     def process(self):
         self.socket_io = SocketIO('localhost', 8000)
-        self.rapi = RoutersAPI()
+        self.rapi = Reuters()
 
         try:
             self.process_channels()
         except HTTPError:
-            print("Error occurred when fetching latest news data" )
+            print("Error occurred when fetching latest news data")
 
     def process_channels(self):
         for channel in self.rapi.get_channels():

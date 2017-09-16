@@ -24,7 +24,7 @@ app.config.update(JOBS=[
         'id': 'news_fetching_job',
         'func': news_processor.process,
         'trigger': 'interval',
-        'seconds': 10
+        'seconds': 2
     }
 ], SCHEDULER_JOBSTORES={}, SCHEDULER_API_ENABLED=True)
 
@@ -52,7 +52,7 @@ def disconnect():
 
 @socketio.on('new_news')
 def new_news(message):
-    emit('news', message['data'], broadcast=True)
+    emit('news', message, broadcast=True)
 
 
 @socketio.on('start_news_stream')
@@ -72,7 +72,7 @@ def handle_news_stream_start():
 def get_story(story_id):
     if not story_id:
         return http_500('No story ID given')
-    story = reuters.get_story_json(story_id)
+    story = reuters.get_story(story_id)
     if not story:
         return http_500('Story ID not found')
 

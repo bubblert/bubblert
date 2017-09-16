@@ -3,6 +3,9 @@ from urllib.request import urlopen
 import time
 import logging
 from xml.etree.ElementTree import ElementTree, fromstring, tostring
+
+from requests import HTTPError
+
 from settings import REUTERS_PASSWORD, REUTERS_USERNAME
 
 from bs4 import BeautifulSoup
@@ -11,7 +14,8 @@ import re
 import json
 
 AUTH_URL = "https://commerce.reuters.com/rmd/rest/xml/"
-SERVICE_URL = "http://rmb.reuters.com/rmd/rest/json/"
+SERVICE_URL_JSON = "http://rmb.reuters.com/rmd/rest/json/"
+SERVICE_URL_XML = "http://rmb.reuters.com/rmd/rest/xml/"
 XML_NAMESPACE = 'http://iptc.org/std/nar/2006-10-01'
 CONTENT_SERVE = 'http://content.reuters.com/auth-server/content/'
 
@@ -29,11 +33,11 @@ class Reuters:
     def _get_auth_token_key_val(self):
         return 'token=' + self.authToken
 
-    def _call_string(self, method, args={}, auth=False):
+    def _call_string(self, method, args={}, auth=False, xml=False):
         if auth:
             root_url = AUTH_URL
         else:
-            root_url = SERVICE_URL
+            root_url = SERVICE_URL_XML if xml else SERVICE_URL_JSON
             args['token'] = self.authToken
 
         url = root_url + method + '?' + urllib.parse.urlencode(args)
@@ -42,18 +46,33 @@ class Reuters:
         rawd = resp.read()
         return rawd.decode('utf-8')
 
-    def call_xml(self, method, args={}):
-        return fromstring(self._call_string(method, args, False))
+    def _call_xml(self, method, args={}):
+        s = self._call_string(method, args, False, xml=True)
+        return fromstring(s)
 
-    def call_json(self, method, args={}):
+    def _call_json(self, method, args={}):
         j = self._call_string(method, args, False)
         return json.loads(j)
+
+    def get_channels(self):
+        return [
+            'BEQ259',
+            'FES376',
+            'STK567',
+            'Wbz248'
+        ]
+
+    def recent_news(self, channel):
+        return self._call_xml('items',
+                              {'channel': channel,
+                               'maxAge': '120m',
+                               'mediaType': 'T'})
 
     def get_story(self, story_id):
         args = {}
         args['id'] = story_id
         try:
-            item = self.call_json('item', args)
+            item = self._call_json('item', args)
         except urllib.error.HTTPError as e:
             logging.error(e)
             return None
@@ -96,56 +115,27 @@ class Reuters:
             'tldr': intro,
             'article': story,
             'language': item.get('language'),
-            'videos': videos,
+            'videos': videos
             # 'audio': []
         }
 
-    def get_story(self, story_id):
-        args = {}
-        args['id'] = story_id
+    def get_story_highlight(self, item_id):
+
         try:
-            item = self.call_xml('item', args)
-        except urllib.error.HTTPError as e:
-            logging.error(e)
+            item_str = self._call_string('item', {'id': item_id}, xml=True)
+        except HTTPError:
             return None
 
-        # this is hacky, namespace issues
-        item_str = tostring(item).decode('utf-8')
-        item_str = item_str.replace('<ns0:', '<').replace('<ns1:', '<').replace("<html:", "<")
-        item_str = item_str.replace('</ns0:', '</').replace('</ns1:', '</').replace("</html:", "</")
+        stripped_str = re.sub('<inlineXML.*</inlineXML>', '', item_str, flags=re.DOTALL)
+        stripped_str = re.sub('<newsMessage.*?>', '<newsMessage>', stripped_str, flags=re.DOTALL, count=1)
+        stripped_str = re.sub('rtr:', '', stripped_str, flags=re.DOTALL)
 
-        soup = BeautifulSoup(item_str, 'lxml')
+        xml = fromstring(stripped_str)
 
-        headline = soup.find('headline')
-        if headline:
-            headline = headline.text
-        located = soup.find('located')
-        if located:
-            located = located.text
-        created = soup.find('dateline')
-        if created:
-            created = created.text
-        tldr = None
-        for t in soup.find_all('description', attrs={'role': 'descRole:intro'}):
-            tldr = t.text
+        image = None
+        for c in xml.findall('.//remoteContent[@contenttype=\'image/jpeg\']'):
+            image = c.attrib['href']
+            break
 
-        imgs = []
-        for img in soup.findAll('contentSet'):
-            print(img.text)
-
-        article = self.find_between(item_str, '<body>', '</body>')
-        article = article.replace('\n', '').replace('\r', '')
-        article = re.sub("\s\s+", " ", article)
-
-        return {
-            'id': story_id,
-            'created': created,
-            'updated': None,
-            'images': [],
-            'headline': headline,
-            'located': located,
-            'tldr': tldr,
-            'article': article,
-            'lang': 'en',
-            'videos': []
-        }
+        return {'image': '{}?token={}'.format(image, self.authToken) if image is not None else None,
+                'keywords': [c.text for c in xml.findall('.//keyword')]}
