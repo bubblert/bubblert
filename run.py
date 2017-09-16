@@ -106,7 +106,7 @@ def stories_until(end_timestamp):
     res = db.execute("""
         SELECT item_id, date_created, headline, keywords
         FROM news
-        WHERE group_id is NULL and  date_created_timestamp > ? - 43200 and  ? > date_created_timestamp
+        WHERE group_id IS NULL AND  date_created_timestamp > ? - 43200 AND  ? > date_created_timestamp
     """, (end_timestamp, end_timestamp))
 
     resp = []
@@ -120,6 +120,32 @@ def stories_until(end_timestamp):
         })
 
     return respond_with_json(resp)
+
+
+@app.route('/group/<group_id>', methods=['GET'])
+def group_by_id(group_id):
+    if not group_id:
+        return http_500('No group ID given')
+    else:
+        db = sqlite3.connect('app_db.sqlite')
+        res = db.execute("""
+                SELECT item_id, date_created, headline, keywords
+                FROM news
+                WHERE group_id = {}
+            """.format(group_id))
+
+        resp = []
+        for r in res.fetchall():
+            resp.append({
+                'type': 'news',
+                'item_id': r[0],
+                'date_created': r[1],
+                'headline': r[2],
+                'keywords': r[3]
+            })
+
+        return respond_with_json(resp)
+
 
 @app.route('/stories/<story_id>', methods=['GET'])
 def get_story(story_id):
