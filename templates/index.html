@@ -21,7 +21,7 @@
     $("#" + page).show();
   }
 
-  var chart = bubbleChart("#article-bubbles", 600, 400);
+  let chart = bubbleChart("#article-bubbles", 600, 400);
 
   $(document).ready(function() {
     switchToPage("article-bubbles");
@@ -33,10 +33,6 @@
 
     socket.on('news_add', function (data) {
       let news = JSON.parse(data);
-      // $("#article-bubbles").append("" +
-      //   "<p>Keyword: " + news.keyword + "</p>" +
-      //   "<p>Headline: " + news.headline + "</p>" +
-      //   "<br>");
       chart.render(news);
     });
   });
