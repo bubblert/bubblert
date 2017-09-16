@@ -1,14 +1,10 @@
-function bubbleChart() {
-    var width = 960,
-        height = 960,
-        maxRadius = 6;
+var bubbleChart = function(container, width, height) {
+    var maxRadius = 6,
+        title = "bubblert",
+        marginTop = 100;
 
-    function chart(selection) {
-        var title = "bubblert";
-        var marginTop = 100;
-        var data = selection.enter().data();
-        var div = selection,
-            svg = div.selectAll('svg');
+    this.render = function(data) {
+        var svg = d3.select(container).selectAll('svg');
         svg.attr('width', width).attr('height', height);
         
         var simulation = d3.forceSimulation(data)
@@ -33,9 +29,8 @@ function bubbleChart() {
             .append("clipPath")
             .attr("id",function(d,i) {
                 return "clip-"+i;
-            })
+            });
     
-            
         node.append('text')
             .attr("id",function(d,i) {
                 return i;
@@ -75,21 +70,5 @@ function bubbleChart() {
         }
     }
 
-    chart.width = function(value) {
-        if (!arguments.length) {
-            return width;
-        }
-        width = value;
-        return chart;
-    };
-
-    chart.height = function(value) {
-        if (!arguments.length) {
-            return height;
-        }
-        height = value;
-        return chart;
-    };
-
-    return chart;
+    return this;
 }

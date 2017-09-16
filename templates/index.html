@@ -5,7 +5,7 @@
 </head>
 <body>
 <div id="content">
-    <div id="article-bubbles"></div>
+    <div id="article-bubbles"><svg></svg></div>
     <div id="article-zoom"></div>
     <div id="article-text"></div>
 </div>
@@ -21,7 +21,7 @@
     $("#" + page).show();
   }
 
-  var chart = bubbleChart().width(600).height(400);
+  var chart = bubbleChart("#article-bubbles", 600, 400);
 
   $(document).ready(function() {
     switchToPage("article-bubbles");
@@ -37,7 +37,7 @@
       //   "<p>Keyword: " + news.keyword + "</p>" +
       //   "<p>Headline: " + news.headline + "</p>" +
       //   "<br>");
-      d3.select('#article-bubbles').data(news).call(chart);
+      chart.render(news);
     });
   });
 </script>
