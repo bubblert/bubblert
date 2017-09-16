@@ -12,6 +12,17 @@
 <script async>
   $(document).ready(function() {
     $("#content").load("components/Main.html");
+
+    var socket = io.connect('http://' + document.domain + ':' + location.port);
+    socket.on('news', function (data) {
+      console.log(data);
+    });
+    socket.on('connect', function() {
+      socket.emit('message', 'hello world');
+    });
+    socket.on('message', function(data) {
+      console.log(data);
+    });
   });
 </script>
 </body>

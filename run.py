@@ -1,12 +1,11 @@
 #!/usr/bin/env python
-import socketio
-import eventlet
-import eventlet.wsgi
 from flask import Flask, render_template
+from flask_socketio import send, emit, SocketIO
 from os import listdir
 
-sio = socketio.Server()
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secret!'
+socketio = SocketIO(app)
 
 
 @app.route('/')
@@ -22,22 +21,21 @@ def components(name):
     return 'Not found', 404
 
 
-@sio.on('connect', namespace='/chat')
-def connect(sid, environ):
-    print("connect ", sid)
+@socketio.on('connect')
+def connect():
+    print("connect ")
 
 
-@sio.on('chat message', namespace='/chat')
-def message(sid, data):
-    print("message ", data)
-    sio.emit('reply', room=sid)
+@socketio.on('disconnect')
+def disconnect():
+    print('disconnect ')
 
 
-@sio.on('disconnect', namespace='/chat')
-def disconnect(sid):
-    print('disconnect ', sid)
+@socketio.on('message')
+def handle_message(message):
+    print('received message: ' + message)
+    emit('message', 'server says hello back!')
 
 
 if __name__ == '__main__':
-    app = socketio.Middleware(sio, app)
-    eventlet.wsgi.server(eventlet.listen(('', 8000)), app)
+    socketio.run(app, host='0.0.0.0', port=8000)
