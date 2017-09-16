@@ -168,3 +168,17 @@ class ReutersPermid:
                     tags.append(current_permid['name'])
             return tags
         return 'Invalid response'
+
+
+if __name__ == '__main__':
+    print(ReutersPermid.get_tags('''
+    North Korea. Constantly ready for war. Holding a nuclear sword over the US and its allies, threatening to lash out at any time.
+
+Life here is a mystery to most of the world.
+
+CNN’s Will Ripley, Tim Schwarz and Justin Robertson visited North Korea in July and spent 15 days there. Despite being constantly under the watchful eye of government minders, they got an unprecedented level of access to this secretive state, beyond the bright lights of Pyongyang, and into the North Korean hinterland.
+
+They spoke to people from all walks of life, learning more about what makes this country tick, the reason for its deep hatred of the US, and just why people who live under an authoritarian regime claim to adore the Kim family.
+
+This is Ripley’s account of their journey into the heart of the hermit nation.
+    '''))
