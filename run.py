@@ -147,7 +147,7 @@ def stories_until(end_timestamp, use_response=True):
     for r in res.fetchall():
         resp.append({
             'type': r[0],
-            'item_id': r[1],
+            'item_id': r[1],  # group id
             'date_created': r[2],
             'headline': r[3],
             'keywords': r[4]
