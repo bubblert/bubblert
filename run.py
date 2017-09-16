@@ -13,6 +13,7 @@ from app.news_aggregation_processor import NewsAggregationProcessor
 from app.news_fetcher_processor import NewsFetcherProcessor
 from app.reuters import Reuters
 from app.knowledge_graph import get_facts_for_keyword
+from app.reuters import ReutersPermid
 
 
 def init_db():
@@ -31,8 +32,8 @@ def init_db():
 
     db.close()
 
-init_db()
 
+init_db()
 
 app = Flask(__name__, static_url_path='')
 app.config['SECRET_KEY'] = 'secret!'
@@ -118,9 +119,21 @@ def get_facts(story_id):
     # TODO: use better keywords to search for facts
     keyword = story.get('headline')
     keyword = 'north korea'
-    facts = get_facts_for_keyword(keyword)
-    print(facts)
-    return respond_with_json(facts)
+    article = story.get('article')
+    article = article if article else ''
+    tags = ReutersPermid.get_tags(article)
+    tag = ''
+    result = []
+
+    LIMIT = 2
+    i = 0
+    for tag in tags:
+        result = result + get_facts_for_keyword(tag)
+        i = i + 1
+        if i > LIMIT: break
+
+    print(result)
+    return respond_with_json(result)
 
 
 def http_500(msg):
