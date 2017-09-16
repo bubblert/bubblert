@@ -116,9 +116,6 @@ def get_facts(story_id):
     if not story:
         return http_500('Story ID not found')
 
-    # TODO: use better keywords to search for facts
-    keyword = story.get('headline')
-    keyword = 'north korea'
     article = story.get('article')
     article = article if article else ''
     tags = ReutersPermid.get_tags(article)
