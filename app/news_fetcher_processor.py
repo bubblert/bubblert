@@ -7,7 +7,7 @@ import sqlite3
 
 from socketIO_client import SocketIO
 
-from app.reuters import Reuters
+from app.reuters import Reuters, ReutersPermid
 
 
 class NewsFetcherProcessor:
@@ -42,7 +42,7 @@ class NewsFetcherProcessor:
 
                 story = self.rapi.get_story_highlight(item_id)
                 image = story['image']
-                keywords = story['keywords']
+                keywords = ReutersPermid.get_tags(story['body'])
 
                 news_date = datetime.datetime.strptime(date_created, "%Y-%m-%dT%H:%M:%SZ")
 

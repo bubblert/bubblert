@@ -131,8 +131,16 @@ class Reuters:
             break
 
         return {'image': '{}?token={}'.format(image, self.authToken) if image is not None else None,
-                'keywords': [c.text for c in xml.findall('.//keyword')]}
+                'keywords': [c.text for c in xml.findall('.//keyword')],
+                'body': self.find_between(item_str, '<body>', '</body>').replace('<p/>', '').replace('<p>', '').replace('</p>', '')}
 
+    def find_between(self, s, first, last):
+        try:
+            start = s.index(first) + len(first)
+            end = s.index(last, start)
+            return s[start:end]
+        except ValueError:
+            return ""
 
 class ReutersPermid:
     @staticmethod
