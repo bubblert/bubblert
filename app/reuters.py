@@ -168,7 +168,9 @@ class ReutersPermid:
                 if 'relevance' in current_permid and float(current_permid['relevance']) > 0:
                     tags.append(current_permid['name'])
             return tags
-        return 'Invalid response'
+        logging.error('problem with permid, status code = ' + str(response.status_code))
+        logging.debug(response.text)
+        return None
 
 
 if __name__ == '__main__':

@@ -14,6 +14,7 @@ from app.news_fetcher_processor import NewsFetcherProcessor
 from app.reuters import Reuters
 from app.knowledge_graph import get_facts_for_keyword
 from app.reuters import ReutersPermid
+from app.nltk_processor import find_nouns
 
 
 def init_db():
@@ -202,10 +203,16 @@ def get_facts(story_id):
 
     article = story.get('body_xhtml')
     article = article if article else ''
+
     tags = ReutersPermid.get_tags(article)
+    if not tags:
+        if story.get('headline'):
+            tags = find_nouns(story.get('headline'))
+
+    print(tags)
     result = []
 
-    LIMIT = 2
+    LIMIT = 3
     i = 0
     for tag in tags:
         facts = get_facts_for_keyword(tag)
