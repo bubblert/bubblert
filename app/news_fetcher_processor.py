@@ -3,7 +3,6 @@ from urllib.error import HTTPError
 
 from socketIO_client import SocketIO
 
-from app.routers_api import RoutersAPI
 from app.reuters_api import ReutersApi
 
 
