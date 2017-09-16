@@ -37,6 +37,9 @@ init_db()
 
 app = Flask(__name__, static_url_path='')
 app.config['SECRET_KEY'] = 'secret!'
+# app.config.from_object({
+#     'debug': True
+# })
 socketio = SocketIO(app)
 
 news_processor = NewsFetcherProcessor()
@@ -218,7 +221,6 @@ def runserver():
     scheduler.start()
 
     socketio.run(app, host='0.0.0.0', port=8000)
-
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)

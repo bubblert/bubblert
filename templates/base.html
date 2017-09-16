@@ -1,25 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Bubblert News!</title>
+    <title>Bubblert News</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../normalize.css">
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .home {
+            width: 100%;
+            height: 100%;
+            background: #FE9375;
+        }
+
+        .home .container {
+            width: 100%;  !important;
+            max-width: 100%;
+            color: black;
+        }
+
+        .home__category {
+            padding: 30px;
+            text-align: center;
+            font-size: 30px;
+            min-height: 25vh;
+            font-weight: bold;
+            vertical-align: middle;
+
+
+        }
+    </style>
 </head>
 <body>
 
-    <header>
-        <div id="logo">bubblert</div>
-    </header>
+<header>
+    {#        <div id="logo">bubblert</div>#}
+</header>
 
 {% block content %}
-<div class="content">
-</div>
+    <div class="content">
+    </div>
 {% endblock content %}
 
 {% block jslibs %}
-<script src="//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
-<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+    <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
 {% endblock jslibs %}
 
 {% block additionaljs %}
