@@ -108,6 +108,15 @@ body {
     text-decoration: none;
 }
 
+.home__category a {
+    opacity: 1; !important;
+}
+
+.home__category:link {
+    opacity: 1; !important;
+}
+
+
 .home__category:hover {
     opacity: 1;
 }
