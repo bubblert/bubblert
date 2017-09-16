@@ -1,18 +1,17 @@
 #!/usr/bin/env python
-from flask import Flask, render_template
-from flask_socketio import send, emit, SocketIO
-import socketio
-import eventlet
-import eventlet.wsgi
-from flask import Flask, render_template, Response
-from os import listdir
 import json
 import logging
+import werkzeug
+
+from flask import Flask, render_template, Response
+from flask_socketio import emit, SocketIO
+from os import listdir
+from app.reuters import Reuters
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
-from app.reuters import Reuters
 
 
 @app.route('/')
@@ -40,8 +39,15 @@ def disconnect():
 
 @socketio.on('start_news_stream')
 def handle_news_stream_start():
-    for i in range(100):
-        emit('news', f'newsflash number {i}')
+    for i in range(10):
+        emit('news_add', json.dumps({
+                'id': i,
+                'keyword': i,
+                'image': None,
+                'headline': f'newsflash number {i}',
+                'lastUpdated': 'now'
+            }
+        ))
 
 
 @app.route('/stories/<story_id>', methods=['GET'])
@@ -60,7 +66,11 @@ def http_500(msg):
     return Response(json.dumps({'error': msg}), 500)
 
 
+@werkzeug.serving.run_with_reloader
+def runserver():
+    socketio.run(app, host='0.0.0.0', port=8000)
+
+
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
-
-    socketio.run(app, host='0.0.0.0', port=8000)
+    runserver()

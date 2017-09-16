@@ -1,1 +1,17 @@
-Here I am!
+<div id="news">
+</div>
+<script>
+  $(document).ready(function() {
+    let socket = io.connect('http://' + document.domain + ':' + location.port);
+    socket.on('news_add', function (data) {
+      let news = JSON.parse(data);
+      $("#news").append("" +
+        "<p>Keyword: " + news.keyword + "</p>" +
+        "<p>Headline: " + news.headline + "</p>" +
+        "<br>");
+    });
+    socket.on('connect', function() {
+      socket.emit('start_news_stream');
+    });
+  });
+</script>
