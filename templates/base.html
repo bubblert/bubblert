@@ -10,26 +10,52 @@
         }
 
         .home__category a {
-            opacity: 1; !important;
+            opacity: 1;
+        !important;
+        }
+
+        header {
+            margin-bottom: -30px;
+        }
+
+        .logo {
+
+{#            padding-top: 20px;#}
+{#            padding-left: 20px;#}
+{#            width: 100%;#}
+{#            background-color: red;#}
+{#            text-align: center;#}
+            padding-top: 10px;
+{#            margin-bottom: -30px;#}
+
+        }
+
+        .logo__img {
+
+            height: 150px;
         }
     </style>
     <script>
-        String.prototype.hashCode = function() {
-              var hash = 0, i, chr;
-              if (this.length === 0) return hash;
-              for (i = 0; i < this.length; i++) {
-                chr   = this.charCodeAt(i);
-                hash  = ((hash << 5) - hash) + chr;
+        String.prototype.hashCode = function () {
+            var hash = 0, i, chr;
+            if (this.length === 0) return hash;
+            for (i = 0; i < this.length; i++) {
+                chr = this.charCodeAt(i);
+                hash = ((hash << 5) - hash) + chr;
                 hash |= 0; // Convert to 32bit integer
-              }
-              return hash;
+            }
+            return hash;
         };
     </script>
 </head>
 <body>
 
 <header>
-    <div id="logo"><a href="/">bubblert</a></div>
+    <div class="logo">
+        <img src="/logo-2.png" alt="logo" class="logo__img"/>
+        {#        <a href="/">bubblert</a>#}
+
+    </div>
 </header>
 
 {% block content %}
