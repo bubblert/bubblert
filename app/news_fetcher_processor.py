@@ -25,8 +25,20 @@ class NewsFetcherProcessor:
 
         try:
             self.process_channels()
+            self.test_news_for_frontend() # TODO
         except HTTPError:
             print("Error occurred when fetching latest news data")
+
+    def test_news_for_frontend(self):
+        data = {
+            'item_id': 'tag:reuters.com,2017:newsml_ISS910541:849023734',
+            'headline': 'this is a new headline',
+            'dateCreated': '2017-01-01 12:12:12',
+            'image': 'https://images.pexels.com/photos/365434/pexels-photo-365434.jpeg',
+            'keywords': ['keyword', 'other keyword']
+        }
+        print('sending new data to client: ')
+        self.socket_io.emit('new_news', data)
 
     def process_channels(self):
         for channel in self.rapi.get_channels():
@@ -49,6 +61,7 @@ class NewsFetcherProcessor:
                 if news_date > self.channel_date[channel]:
                     self.push_data({
                         'id': item_id,
+                        'item_id': item_id, # which one ? legacy
                         'headline': headline,
                         'dateCreated': date_created,
                         'image': image,
@@ -63,7 +76,7 @@ class NewsFetcherProcessor:
         db.execute(
             "INSERT OR REPLACE INTO news(item_id, channel, date_created, date_created_timestamp, headline, keywords) \
             VALUES (?, ?, ?, ?, ?, ?)",
-            (item_id, channel, date_created,  int(date_created.timestamp()), headline, json.dumps(keywords)))
+            (item_id, channel, date_created, int(date_created.timestamp()), headline, json.dumps(keywords)))
         db.commit()
 
     def push_data(self, data):

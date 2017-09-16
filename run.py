@@ -99,9 +99,11 @@ def disconnect():
 def new_news(message):
     emit('news', message, broadcast=True)
 
+
 @socketio.on('start_news_stream')
 def handle_news_stream_start():
     emit('news_add', stories_until(0, False))
+
 
 @app.route('/stories_until/<end_timestamp>', methods=['GET'])
 def stories_until(end_timestamp, use_response=True):
@@ -119,7 +121,7 @@ def stories_until(end_timestamp, use_response=True):
                           keywords
                         FROM (
                           SELECT
-                            'news' as type,
+                            'news' AS type,
                             item_id,
                             date_created,
                             date_created_timestamp,
@@ -131,13 +133,13 @@ def stories_until(end_timestamp, use_response=True):
                           UNION ALL
 
                           SELECT
-                            'group' as type,
+                            'group' AS type,
                             id AS item_id,
                             date_created,
                             date_created_timestamp,
                             headline,
                             keywords
-                          FROM groups as g
+                          FROM groups AS g
                           WHERE date_created_timestamp > ? - 43200 AND ? > date_created_timestamp
                         )
                         ORDER BY date_created_timestamp
@@ -178,7 +180,7 @@ def group_by_id(group_id):
                 'keywords': r[3]
             })
 
-        return respond_with_json(resp) 
+        return respond_with_json(resp)
 
 
 @app.route('/stories/<story_id>', methods=['GET'])
@@ -207,7 +209,7 @@ def get_facts(story_id):
     i = 0
     for tag in tags:
         facts = get_facts_for_keyword(tag)
-        if facts: 
+        if facts:
             result = result + facts
             i = i + 1
             if i > LIMIT: break
