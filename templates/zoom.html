@@ -1,7 +1,7 @@
 {% include 'base.html' %}
 
 {% block content %}
-    <section class="home">
+    <section id="zoom" class="home">
         <div class="container">
             <div class="row" id="categories">
                 {#                <div class="col-sm-4 first home__category">{{ story.headline }}</div>#}
@@ -18,7 +18,7 @@
         }
 
         function update_colors() {
-            let colors = ['#335557', '#57A473', '#E7CB63', '#F6981A', '#E2693F']
+            let colors = ['#509498', '#57A473', '#E7CB63', '#F6981A', '#E2693F']
             $('.home__category').each(function (i, obj) {
                 $(obj).css("background", colors[i++ % colors.length]);
             });
@@ -30,14 +30,14 @@
             });
 
             let href = $(location).attr('href').split('/');
-            let groupId = href[href.length - 1];
+            let groupId = href[href.length - 2];
             if (groupId == 'zoom') {
                 window.location.href = 'http://' + document.domain + ':' + location.port + '/'
             }
             let allKeywords = new Set();
             let articleSet = new Set();
 
-            $.ajax({
+           $.ajax({
                 type: "GET",
                 dataType: "json",
                 url: "http://" + document.domain + ':' + location.port + '/group/' + groupId,
@@ -45,20 +45,24 @@
                     if (data != null) {
                         data.forEach(function (item) {
                             if (!articleSet.has(item.headline)) {
-                                console.log(item);
-                                let val = `<a href="/detail/${item.item_id}">${item.headline}</a>`;
-                                let div = `<div id="${createEntryId(item.item_id)}" class="col-sm-4 first home__category"> ${val} </div>`;
-                                $('#categories').prepend($(div));
                                 articleSet.add(item.headline)
-                                if (data.keywords) {
-                                    data.keywords.forEach(function (k) {
+                                let hasPrimaryKeyword = false;
+                                if (item.keywords) {
+                                    item.keywords.forEach(function (k) {
                                         allKeywords.add(k);
-                                    })
-                                }
+                                        if (k == "{{ keyword }}") {
+                                            hasPrimaryKeyword = true;
+                                        }
+                                    });
+                                }                     
+                                let val = `<a href="/detail/${item.item_id}">${item.headline}</a>`;
+                                let primaryClass = hasPrimaryKeyword ? 'primary' : '';
+                                let div = `<div id="${createEntryId(item.item_id)}" class="col-sm-4 first home__category ${primaryClass}"> ${val} </div>`;
+                                $('#categories').prepend($(div));
                             }
                         });
                     }
-                    update_colors();
+                    //update_colors();
                 }
             });
 
@@ -75,7 +79,7 @@
                         let val = `<a href="/detail/${item.item_id}">${item.headline}</a>`;
                         let div = `<div id="${createEntryId(item.item_id)}" class="col-sm-4 first home__category"> ${val} </div>`;
                         $('#categories').prepend($(div));
-                        update_colors();
+                        // update_colors();
                     }
                 }
             });

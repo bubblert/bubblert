@@ -108,9 +108,19 @@ body {
     border-radius: 3px;
     /*line-height: 15vh;*/
 }
+
+#zoom .home__category {
+    background-color: #7AAAD4;
+    opacity: 0.6;
+}
+
+#zoom .home__category.primary {
+    background-color: #3B7EBA;
+    opacity: 0.8;
+}
+
 .home__category a {
     color: #444;
-
 }
 
 .home__text {
@@ -130,7 +140,7 @@ body {
 }
 
 .home__category:hover {
-    opacity: 1;
+    opacity: 1!important;
 }
 
 .num-of-articles {

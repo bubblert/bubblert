@@ -43,7 +43,7 @@
                             item.keywords.forEach(function (key) {
                                 if (!keywordDict.hasOwnProperty(key) && !found && key != null) {
                                     keywordDict[key] = 1;
-                                    let val = `<a href="/zoom/${item.item_id}">${key} <span class="num-of-articles">1</span></a>`;
+                                    let val = `<a href="/zoom/${item.item_id}/${key}">${key} <span class="num-of-articles">1</span></a>`;
                                     let div = `<div id="${createEntryId(item.item_id)}" data-key="${key}" class="col-sm-3 first home__category home__text"> ${val} </div>`;
                                     $('#categories').prepend($(div));
                                 } else {

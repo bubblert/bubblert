@@ -75,10 +75,10 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/zoom/<story_id>')
-def zoom(story_id):
+@app.route('/zoom/<story_id>/<keyword>')
+def zoom(story_id, keyword):
     story = reuters.get_story(story_id)
-    return render_template('zoom.html', story=story)
+    return render_template('zoom.html', story=story, keyword=keyword)
 
 
 @app.route('/detail/<story_id>')
