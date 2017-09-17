@@ -144,8 +144,9 @@ def stories_until(end_timestamp, use_response=True):
                           FROM groups AS g
                           WHERE date_created_timestamp > ? - 432000 AND ? > date_created_timestamp
                         )
+                        GROUP BY headline
                         ORDER BY date_created_timestamp
-                          DESC;""", (end_timestamp, end_timestamp, end_timestamp, end_timestamp))
+                          DESC LIMIT 500;""", (end_timestamp, end_timestamp, end_timestamp, end_timestamp))
 
     resp = []
     for r in res.fetchall():

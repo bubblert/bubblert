@@ -37,36 +37,46 @@
             let allKeywords = new Set();
             let articleSet = new Set();
 
-           $.ajax({
-                type: "GET",
-                dataType: "json",
-                url: "http://" + document.domain + ':' + location.port + '/group/' + groupId,
-                success: function (data) {
-                    if (data != null) {
-                        data.forEach(function (item) {
-                            if (!articleSet.has(item.headline)) {
-                                articleSet.add(item.headline)
-                                let hasPrimaryKeyword = false;
-                                if (item.keywords) {
-                                    item.keywords.forEach(function (k) {
-                                        allKeywords.add(k);
-                                        if (k == "{{ keyword }}") {
-                                            hasPrimaryKeyword = true;
-                                        }
-                                    });
-                                }                     
-                                let val = `<a href="/detail/${item.item_id}">${item.headline}</a>`;
-                                let primaryClass = hasPrimaryKeyword ? 'primary' : '';
-                                let div = `<div id="${createEntryId(item.item_id)}" class="col-sm-4 first home__category ${primaryClass}"> ${val} </div>`;
-                                $('#categories').prepend($(div));
-                            }
-                        });
+            let keywordDict = JSON.parse(localStorage.getItem("keywordDict"));
+            
+            if(keywordDict && keywordDict.hasOwnProperty("{{ keyword }}")) {
+                keywordDict["{{ keyword }}"].forEach(function(item) {
+                    let val = `<a href="/detail/${item.item_id}">${item.headline}</a>`;
+                    let div = `<div id="${createEntryId(item.item_id)}" class="col-sm-4 first home__category"> ${val} </div>`;
+                    $('#categories').prepend($(div));
+                });
+            } else {
+                $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url: "http://" + document.domain + ':' + location.port + '/group/' + groupId,
+                    success: function (data) {
+                        if (data != null) {
+                            data.forEach(function (item) {
+                                if (!articleSet.has(item.headline)) {
+                                    articleSet.add(item.headline)
+                                    let hasPrimaryKeyword = false;
+                                    if (item.keywords) {
+                                        item.keywords.forEach(function (k) {
+                                            allKeywords.add(k);
+                                            if (k == "{{ keyword }}") {
+                                                hasPrimaryKeyword = true;
+                                            }
+                                        });
+                                    }                     
+                                    let val = `<a href="/detail/${item.item_id}">${item.headline}</a>`;
+                                    let primaryClass = hasPrimaryKeyword ? 'primary' : '';
+                                    let div = `<div id="${createEntryId(item.item_id)}" class="col-sm-4 first home__category ${primaryClass}"> ${val} </div>`;
+                                    $('#categories').prepend($(div));
+                                }
+                            });
+                        }
+                        //update_colors();
                     }
-                    //update_colors();
-                }
-            });
+                });
+            }
 
-            socket.on('news', function (item) {
+            /*socket.on('news', function (item) {
                 console.log(item);
                 let hasMatchingKeyword = false;
                 if (item) {
@@ -82,7 +92,7 @@
                         // update_colors();
                     }
                 }
-            });
+            });*/
         });
 
 

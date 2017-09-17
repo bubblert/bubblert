@@ -21,7 +21,7 @@
             let colors = ['#509498', '#57A473', '#E7CB63', '#F6981A', '#E2693F']
             $('.home__category').each(function (i, obj) {
                 var colorIndex = Math.min(colors.length, parseInt($(this).find(".num-of-articles").html()));
-                $(obj).css("background", colors[colorIndex - 1]);
+                $(obj).css("background", colors[colorIndex - 2]);
                 //$(obj).css("background", colors[i++ % colors.length]);
             });
         }
@@ -38,22 +38,26 @@
             socket.on('news_add', function (data) {
                 if (data) {
                     data.forEach(function (item) {
-                        if (item && item.type && item.type == 'group' && item.keywords != null) {
+                        if (item && item.type && item.type == 'news' && item.keywords != null && item.keywords instanceof Array) {
                             let found = false;
                             item.keywords.forEach(function (key) {
                                 if (!keywordDict.hasOwnProperty(key) && !found && key != null) {
-                                    keywordDict[key] = 1;
-                                    let val = `<a href="/zoom/${item.item_id}/${key}">${key} <span class="num-of-articles">1</span></a>`;
+                                    keywordDict[key] = [item];
+                                } else {
+                                  keywordDict[key].push(item);
+                                  if (keywordDict[key].length == 2) {
+                                    let val = `<a href="/zoom/${item.item_id}/${key}">${key} <span class="num-of-articles">2</span></a>`;
                                     let div = `<div id="${createEntryId(item.item_id)}" data-key="${key}" class="col-sm-3 first home__category home__text"> ${val} </div>`;
                                     $('#categories').prepend($(div));
-                                } else {
-                                  keywordDict[key] += 1;
-                                  $('[data-key="'+key+'"]').find(".num-of-articles").html(keywordDict[key]);
+                                  } else {
+                                    $('[data-key="'+key+'"]').find(".num-of-articles").html(keywordDict[key].length);
+                                  }
                                 }
                             });
                         }
                     });
                     console.log(keywordDict);
+                    localStorage.setItem('keywordDict', JSON.stringify(keywordDict));
                     update_colors();
                 }
             });
