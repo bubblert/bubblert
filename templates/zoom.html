@@ -35,6 +35,7 @@
                 window.location.href = 'http://' + document.domain + ':' + location.port + '/'
             }
             let allKeywords = new Set();
+            let articleSet = new Set();
 
             $.ajax({
                 type: "GET",
@@ -43,14 +44,17 @@
                 success: function (data) {
                     if (data != null) {
                         data.forEach(function (item) {
-                            console.log(item);
-                            let val = `<a href="/detail/${item.item_id}">${item.headline}</a>`;
-                            let div = `<div id="${createEntryId(item.item_id)}" class="col-sm-4 first home__category"> ${val} </div>`;
-                            $('#categories').prepend($(div));
-                            if (data.keywords) {
-                                data.keywords.forEach(function (k) {
-                                    allKeywords.add(k);
-                                })
+                            if (!articleSet.has(item.headline)) {
+                                console.log(item);
+                                let val = `<a href="/detail/${item.item_id}">${item.headline}</a>`;
+                                let div = `<div id="${createEntryId(item.item_id)}" class="col-sm-4 first home__category"> ${val} </div>`;
+                                $('#categories').prepend($(div));
+                                articleSet.add(item.headline)
+                                if (data.keywords) {
+                                    data.keywords.forEach(function (k) {
+                                        allKeywords.add(k);
+                                    })
+                                }
                             }
                         });
                     }
