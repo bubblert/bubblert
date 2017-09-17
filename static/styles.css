@@ -122,14 +122,22 @@ body {
 }
 
 .home__category a {
-    opacity: 1;  !important;
+    opacity: 1 !important;
 }
 
 .home__category:link {
-    opacity: 1;
-!important;
+    opacity: 1 !important;
 }
 
 .home__category:hover {
     opacity: 1;
+}
+
+.num-of-articles {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    display: block;
+    float: left;
+    font-size: 16px;
 }
