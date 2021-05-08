@@ -6,7 +6,7 @@ blinker==1.4
 bs4==0.0.1
 celery==4.0.1
 click==6.6
-eventlet==0.16.1
+eventlet==0.31.0
 facebook-sdk==2.0.0
 flake8==3.4.1
 Flask>=0.12.3
